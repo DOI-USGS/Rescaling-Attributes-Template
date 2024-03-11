@@ -107,6 +107,39 @@ p1_targets_list <- list(
   tar_target(
     p1_aoi,
     sf::st_read(p1_drb_dl[grep(".shp$", p1_drb_dl)])
+  ),
+  
+  # ============================================================================
+  # names
+  # ============================================================================
+  # what are your columns called
+  tar_target(
+    p1_source_id_name, 
+    "featureid"
+  ), 
+  
+  tar_target(
+    p1_target_id_name, 
+    "huc12"
+  ), 
+  
+  tar_target(
+    p1_source_geom_name, 
+    "geom"
+  ), 
+  
+  tar_target(
+    p1_target_geom_name, 
+    "shape"
+  ), 
+  
+  tar_target(
+    p1_source_var_name, 
+    "characteristic_id"
+  ),
+  
+  tar_target(
+    p1_source_value_name, 
+    "characteristic_value"
   )
-
 )

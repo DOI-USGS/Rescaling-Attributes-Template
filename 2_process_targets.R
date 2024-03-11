@@ -50,7 +50,7 @@ p2_targets_list <- list(
   tar_target(
     p2_source,
     {
-      is_unique <- nrow(p2_source_intersected) == length(unique(p2_source_intersected$featureid))
+      is_unique <- nrow(p2_source_intersected) == length(unique(p2_source_intersected[, p1_source_id_name]))
       if(!is_unique){
         warning("There are duplicate IDs in source geometry. First, you  need to handle these cases: either deduplicate or make a unique ID. The pipeline will run, but be ware that at these duplicated geometries attributes are unreliable because implicit assumptions are made when aggregating values.")
       }
@@ -63,10 +63,10 @@ p2_targets_list <- list(
   tar_target(
     p2_target,
     {
-      is_unique <- nrow(p2_target_cleaned) == length(unique(p2_target_cleaned$huc12))
+      is_unique <- nrow(p2_target_cleaned) == length(unique(p2_target_cleaned[, p1_target_id_name]))
       if(!is_unique){
         warning("There are duplicate IDs in target geometry. I will deduplicate these for you, but make sure that is what you want!")
-        p2_target_ready <- dedup(p2_target_cleaned, "huc12")
+        p2_target_ready <- dedup(p2_target_cleaned, p1_target_id_name)
       } else {
         p2_target_ready <- p2_target_cleaned 
       }
@@ -81,8 +81,8 @@ p2_targets_list <- list(
   tar_target(
     p2_weights, 
     ncdfgeom::calculate_area_intersection_weights(
-      p2_source[, c("featureid", "geom")],  
-      p2_target[, c("huc12", "shape")], 
+      p2_source[, c(p1_source_id_name, p1_source_geom_name)],  
+      p2_target[, c(p1_target_id_name, p1_target_geom_name)], 
       # normalize will ensure weights are calculate with intersection area divided by *target* geometry areas
       normalize = TRUE 
     )
@@ -106,8 +106,8 @@ p2_targets_list <- list(
   tar_target(
     p2_areas_x, 
     tibble(
-      featureid = p2_source$featureid,
-      featureid_areasqkm = as.numeric(
+      p1_source_id_name = p2_source[, p1_source_id_name],
+      source_areasqkm = as.numeric(
         units::set_units(
           sf::st_area(p2_source), 
           "km^2"
@@ -120,8 +120,8 @@ p2_targets_list <- list(
   tar_target(
     p2_areas_y, 
     tibble(
-      huc12 = p2_target$huc12,
-      huc12_areasqkm = as.numeric(
+      p1_target_id_name = p2_target[, p1_target_id_name],
+      target_areasqkm = as.numeric(
         units::set_units(
           sf::st_area(p2_target), 
           "km^2"
@@ -133,9 +133,9 @@ p2_targets_list <- list(
   # add them to weights matrix
   tar_target(
     p2_weights_plus,
-    left_join(p2_weights, p2_areas_x, by = join_by(featureid)) |>
-      left_join(p2_areas_y, by = join_by(huc12)) |>
-      mutate(intersection_areasqkm = huc12_areasqkm * w)
+    left_join(p2_weights, p2_areas_x, by = join_by(!!p1_source_id_name)) |>
+      left_join(p2_areas_y, by = join_by(!!p1_target_id_name)) |>
+      mutate(intersection_areasqkm = target_areasqkm * w)
   ), 
 
   # ============================================================================
@@ -147,7 +147,9 @@ p2_targets_list <- list(
     p2_att_raw, 
     nhdplusTools::get_catchment_characteristics(
       varname = p1_vars,
-      ids = unique(p2_weights_plus$featureid)), 
+      ids = unique(p2_weights_plus[, p1_source_id_name])
+    ) |>
+      rename(!!p1_source_id_name := comid), 
     pattern = map(p1_vars)
   ), 
 
@@ -157,8 +159,8 @@ p2_targets_list <- list(
     p2_att_raw |>
       select(-percent_nodata) |>
       pivot_wider(
-        names_from = characteristic_id,
-        values_from = characteristic_value
+        names_from = !!p1_source_var_name,
+        values_from = !!p1_source_value_name
       )
   ), 
 
@@ -168,7 +170,7 @@ p2_targets_list <- list(
     left_join(
       p2_att_wide, 
       p2_weights_plus, 
-      by = join_by(comid == featureid), 
+      by = join_by(!!p1_source_var_name), 
       relationship = "one-to-many" 
     )
   ),
@@ -179,8 +181,8 @@ p2_targets_list <- list(
     p2_att_joined |>
       pivot_longer(
         cols = all_of(p1_vars),
-        names_to = "characteristic_id",
-        values_to = "characteristic_value"
+        names_to = p1_source_var_name,
+        values_to = p1_source_value_name
       ) |>
       na.omit()
   ), 
@@ -192,15 +194,15 @@ p2_targets_list <- list(
   tar_target(
     p2_rescaled, 
     p2_att_long |>
-      group_by(huc12, characteristic_id) |>
+      group_by(!!p1_target_id_name, !!p1_source_var_name) |>
       summarize(
         rescaled_value = weighted.mean(
-          x = characteristic_value, 
+          x = !!p1_source_value_name, 
           w = intersection_areasqkm, 
           na.rm = TRUE), 
         .groups = 'drop'
       ) |>
-      arrange(characteristic_id)
+      arrange(!!p1_source_value_name)
   ), 
   
   # reformat the results as wide format
@@ -208,7 +210,7 @@ p2_targets_list <- list(
     p2_rescaled_wide, 
     p2_rescaled |>
     pivot_wider(
-      names_from = characteristic_id, 
+      names_from = !!p1_source_value_name, 
       values_from = rescaled_value
     )
   ), 
