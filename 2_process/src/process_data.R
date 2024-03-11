@@ -1,3 +1,20 @@
+#' to remove all geometry types that are not polygons or multipolygons. function will return the geometry if no other types exist.
+#' @param x an sf geometry
+
+clean_geometry_type <- function(x){
+  bad_types <- which(st_geometry_type(x) != "POLYGON" & st_geometry_type(x) != "MULTIPOLYGON")
+  
+  if(length(bad_types) != 0) {
+    warning("There are geometry types in target geometry that are not polygon or multipolygon. You will need to fix those before proceeding. For now, I am going to delete those geometries!")
+    x_cleaned <- x[-bad_types, ]
+  } else {
+    x_cleaned <- x
+  }
+  return(x_cleaned)
+}
+
+
+
 #' to resolve cases where multiple features have the same featureid by combining the individual features into a single geometry
 #' @param x an sf geometry
 #' @param id the unique identifiers of the elements in a geometry. For example in NHDPlusV2 it is "featureid"
@@ -16,38 +33,26 @@ dedup <- function(x, id) {
   }
 }
 
-#' to remove all geometry types that are not polygons or multipolygons. function will return the geometry if no other types exist.
-#' @param x an sf geometry
 
-clean_geometry_type <- function(x){
-  bad_types <- which(st_geometry_type(x) != "POLYGON" & st_geometry_type(x) != "MULTIPOLYGON")
-  
-  if(length(bad_types) != 0) {
-    warning("There are geometry types in target geometry that are not polygon or multipolygon. You will need to fix those before proceeding. For now, I am going to delete those geometries!")
-    x_cleaned <- x[-bad_types, ]
-  } else {
-    x_cleaned <- x
-  }
-  return(x_cleaned)
-}
 
 #' example of how to make a unique ID column, only relevant to NHDPlusV2
-#' @param source sf geometry that is the NHDPlusV2
+#' @param source sf geometry, e.g., NHDPlusV2
+#' @param id name of the id column that should be unique, e.g., for NHDPlusV2, it is featureid
 
-make_unique_id <- function(source){
+make_unique_id <- function(source, id){
   uniqueid <- source |>
     st_drop_geometry() |>
-    group_by(featureid) |>
-    mutate(rowid = data.table::rowid(featureid)) |>
+    group_by(!!id) |>
+    mutate(rowid = data.table::rowid(!!id)) |>
     mutate(
-      featureid_num = ifelse(
+      id_num = ifelse(
         rowid > 1, 
-        paste(featureid, rowid, sep = "_"), 
-        as.character(featureid)
+        paste(!!id, rowid, sep = "_"), 
+        as.character(!!id)
       )
     )
   source <- source |>
-    mutate(featureid_num = uniqueid$featureid_num)
+    mutate(id_num = uniqueid$id_num)
 
   return(source)
 }

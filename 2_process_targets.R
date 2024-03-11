@@ -6,12 +6,13 @@ p2_targets_list <- list(
   # ============================================================================
   # prep the spatial geometries
   # ============================================================================
-  # transform 
+  # do a spatial transformation 
   tar_target(
     p2_source_transformed, 
     p1_source |>
       sf::st_transform(5070) # albers equal area
   ),
+  
   tar_target(
     p2_target_transformed, 
     p1_target |>
@@ -36,6 +37,7 @@ p2_targets_list <- list(
   ),
   
   # clean geometry types
+  # sometimes, the WBD has geometries that are not polygons or multipolygons, this pipeline will not know what to do with those
   tar_target(
     p2_target_cleaned, 
     clean_geometry_type(p2_target_intersected)
@@ -43,9 +45,8 @@ p2_targets_list <- list(
   
   # ============================================================================
   # check if there are duplicate IDs 
-  # if there are duplicate IDs in source, proceed anyway
-  # if there are duplicate IDs in target, deduplicate
   # ============================================================================
+  # if there are duplicate IDs in source, proceed anyway
   tar_target(
     p2_source,
     {
@@ -57,6 +58,8 @@ p2_targets_list <- list(
     }
   ), 
   
+  # if there are duplicate IDs in target, deduplicate
+  # sometimes, the WBD will have a geometry with a small dangling pixel that creates self-intersecting polygons and the dataframe will have a duplicated ID associated with each polygon. 
   tar_target(
     p2_target,
     {
@@ -72,18 +75,20 @@ p2_targets_list <- list(
   ), 
   
   # ============================================================================
-  # build weights matrix
+  # weights matrix
   # ============================================================================
+  # build the matrix
   tar_target(
     p2_weights, 
     ncdfgeom::calculate_area_intersection_weights(
       p2_source[, c("featureid", "geom")],  
       p2_target[, c("huc12", "shape")], 
-      normalize = TRUE
+      # normalize will ensure weights are calculate with intersection area divided by *target* geometry areas
+      normalize = TRUE 
     )
   ), 
   
-  # write out, for convenience, won't be needing this target anymore
+  # write it out for convenience, but we won't be needing this target anymore
   tar_target(
     p2_weights_write, 
     {
@@ -136,7 +141,8 @@ p2_targets_list <- list(
   # ============================================================================
   # pull attributes and process
   # ============================================================================
-  # pull attributes for NHDPlusV2 catchments
+  # read in your attributes table
+  # in this example, we will pull attributes for NHDPlusV2 catchments using some handy functions and reformat it
   tar_target(
     p2_att_raw, 
     nhdplusTools::get_catchment_characteristics(
@@ -182,25 +188,28 @@ p2_targets_list <- list(
   # ============================================================================
   # rescale attributes 
   # ============================================================================
+  # let's rescale with a area weighted mean
   tar_target(
     p2_rescaled, 
     p2_att_long |>
-      mutate(weighted_value = characteristic_value * intersection_areasqkm) |>
       group_by(huc12, characteristic_id) |>
       summarize(
-        new_value = sum(weighted_value)/sum(intersection_areasqkm), 
+        rescaled_value = weighted.mean(
+          x = characteristic_value, 
+          w = intersection_areasqkm, 
+          na.rm = TRUE), 
         .groups = 'drop'
       ) |>
       arrange(characteristic_id)
   ), 
   
-  # can output as wide format
+  # reformat the results as wide format
   tar_target(
     p2_rescaled_wide, 
     p2_rescaled |>
     pivot_wider(
       names_from = characteristic_id, 
-      values_from = new_value
+      values_from = rescaled_value
     )
   ), 
   

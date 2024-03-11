@@ -6,6 +6,9 @@ p1_targets_list <- list(
   # ============================== USER INPUT ==================================
   # variables of interest 
   # ============================================================================
+  # define the variables you care about in a vector
+  # in this example, we will pull variables processed for NHDPlusV2 catchments; 
+  # they are in this data release: https://www.sciencebase.gov/catalog/item/5669a79ee4b08895842a1d47
   tar_target(
     p1_vars,
     {
@@ -30,7 +33,9 @@ p1_targets_list <- list(
   # ============================================================================
   # area of interest
   # ============================================================================
-  # (1) source polygons: NHDPlusV2 catchments 
+  # (1) source polygons: define the polygons where you have attributes processed to
+  # in this example, we have data at NHDPlusV2 catchments 
+  # download the polygons and put them in "1_fetch/out"
   tar_target(
     p1_source_dl, 
     {
@@ -51,8 +56,10 @@ p1_targets_list <- list(
     sf::read_sf(p1_source_dl)
   ), 
   
-  # (2) target polygons: latest WBD HUC12
+  # (2) target polygons: define the polygons you want attributes processed to
+  # in this example, we will rescale data to the latest WBD HUC12
   # URL: "https://prd-tnm.s3.amazonaws.com/index.html?prefix=StagedProducts/Hydrography/WBD/National/GDB/WBD_National_GDB.zip"
+  # download the polygons from the cloud and put them in "1_fetch/out"
   tar_target(
     p1_target_dl,
     {
@@ -77,13 +84,16 @@ p1_targets_list <- list(
     format = "file"
   ),
   
+  # read in the polygons
   # use sf::st_layers(p1_target_dl) in the console to find the layers
   tar_target(
     p1_target, 
     sf::read_sf(p1_target_dl, layer = "WBDHU12")
   ),
   
-  # (3) Basin of interest if you don't want to do national analysis
+  # (3) Basin of interest: if you don't want to do national analysis, bring in your area of interest
+  # in this example, we will rescale data only for the Delaware River Basin
+  # download the basin boundary and put it in "1_fetch/out"
   tar_target(
     p1_drb_dl,
     sbtools::item_file_download(
@@ -93,6 +103,7 @@ p1_targets_list <- list(
     format = "file"
   ),
   
+  # read in the Area of Interest (AOI) 
   tar_target(
     p1_aoi,
     sf::st_read(p1_drb_dl[grep(".shp$", p1_drb_dl)])
