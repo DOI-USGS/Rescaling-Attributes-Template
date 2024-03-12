@@ -33,7 +33,7 @@ tar_option_set(
     "tidyverse", "nhdplusTools", "sf", "sbtools", "aws.s3", 
     
     # phase 2_process, "areal" is a dependency that needs to be downloaded 
-    "ncdfgeom", "mapdata", "maps", "data.table", "stringr",
+    "ncdfgeom", "mapdata", "maps", "data.table", "stringr", "reprex",
     
     # phase 3_visualize
     "ggmap", "cowplot", "scico", "viridis"
@@ -53,10 +53,10 @@ source('3_visualize_targets.R')
 source('4_qc_targets.R')
 
 # # partial list of targets: use this if all you want is the data
-# list(p1_targets_list, p2_targets_list)
+list(p1_targets_list, p2_targets_list)
 
 # complete list of targets: use this if you also want some plots (could take a long time to build)
-list(p1_targets_list, p2_targets_list, p3_targets_list, p4_targets_list)
+# list(p1_targets_list, p2_targets_list, p3_targets_list, p4_targets_list)
 
 
 # ==============================================================================
