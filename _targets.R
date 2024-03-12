@@ -25,6 +25,7 @@
 # ==============================================================================
 library(targets)
 library(tarchetypes)
+library(rlang) 
 
 # target options
 tar_option_set(
@@ -33,7 +34,7 @@ tar_option_set(
     "tidyverse", "nhdplusTools", "sf", "sbtools", "aws.s3", 
     
     # phase 2_process, "areal" is a dependency that needs to be downloaded 
-    "ncdfgeom", "mapdata", "maps", "data.table", "stringr", "reprex",
+    "ncdfgeom", "mapdata", "maps", "data.table", "stringr",
     
     # phase 3_visualize
     "ggmap", "cowplot", "scico", "viridis"

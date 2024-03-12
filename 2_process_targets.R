@@ -194,15 +194,15 @@ p2_targets_list <- list(
   tar_target(
     p2_rescaled,
     p2_att_long |>
-      group_by(!!sym(p1_target_id_name), !!sym(p1_source_var_name)) |>
+      group_by(pick(eval(p1_target_id_name)), pick(eval(p1_source_var_name))) |>
       summarize(
         rescaled_value = weighted.mean(
-          x = !!sym(p1_source_value_name),
-          w = intersection_areasqkm,
+          x = across(eval(p1_source_value_name)),
+          w = across(intersection_areasqkm),
           na.rm = TRUE),
         .groups = 'drop'
-      ) |>
-      arrange(!!sym(p1_source_var_name))
+       ) |>
+      arrange(across(all_of(p1_source_var_name)))
   ),
 
   # reformat the results as wide format
@@ -210,7 +210,7 @@ p2_targets_list <- list(
     p2_rescaled_wide,
     p2_rescaled |>
     pivot_wider(
-      names_from = p1_source_value_name,
+      names_from = as.name(p1_source_var_name),
       values_from = rescaled_value
     )
   ),
@@ -224,6 +224,12 @@ p2_targets_list <- list(
       file_out
     },
     format = "file"
-  )
+  ),
   # ============================================================================
+  
+  # targets search path 
+  tar_target(
+    p2_search, 
+    search()
+  )
 )
