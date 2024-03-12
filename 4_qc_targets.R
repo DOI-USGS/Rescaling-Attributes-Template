@@ -93,7 +93,7 @@ p4_targets_list <- list(
       group_by(huc12) |>
       summarize(sum_intersection_areasqkm = sum(intersection_areasqkm),
                 num_obs = n(),
-                sum_intersection_areasqkm_over_target_areasqkm = sum_intersection_areasqkm/unique(huc12_areasqkm))
+                sum_intersection_areasqkm_over_target_areasqkm = sum_intersection_areasqkm/unique(target_areasqkm))
   ), 
   
   # make the spatial dataframe

@@ -25,7 +25,6 @@
 # ==============================================================================
 library(targets)
 library(tarchetypes)
-library(rlang) 
 
 # target options
 tar_option_set(
@@ -54,10 +53,10 @@ source('3_visualize_targets.R')
 source('4_qc_targets.R')
 
 # # partial list of targets: use this if all you want is the data
-list(p1_targets_list, p2_targets_list)
+# list(p1_targets_list, p2_targets_list)
 
 # complete list of targets: use this if you also want some plots (could take a long time to build)
-# list(p1_targets_list, p2_targets_list, p3_targets_list, p4_targets_list)
+list(p1_targets_list, p2_targets_list, p3_targets_list, p4_targets_list)
 
 
 # ==============================================================================

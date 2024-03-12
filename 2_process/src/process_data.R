@@ -34,7 +34,7 @@ dedup <- function(x, id) {
 }
 
 
-
+# TODO: need to test if this still works! 
 #' example of how to make a unique ID column, only relevant to NHDPlusV2
 #' @param source sf geometry, e.g., NHDPlusV2
 #' @param id name of the id column that should be unique, e.g., for NHDPlusV2, it is featureid
@@ -42,13 +42,13 @@ dedup <- function(x, id) {
 make_unique_id <- function(source, id){
   uniqueid <- source |>
     st_drop_geometry() |>
-    group_by(!!id) |>
-    mutate(rowid = data.table::rowid(!!id)) |>
+    group_by(pick(eval(id))) |>
+    mutate(rowid = data.table::rowid(pick(eval(id)))) |>
     mutate(
       id_num = ifelse(
         rowid > 1, 
-        paste(!!id, rowid, sep = "_"), 
-        as.character(!!id)
+        paste(id, rowid, sep = "_"), 
+        as.character(id)
       )
     )
   source <- source |>

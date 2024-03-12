@@ -14,7 +14,7 @@ p3_targets_list <- list(
       dplyr::inner_join(
         p2_source, 
         p2_att_joined, 
-        by = join_by(featureid == comid)
+        by = join_by(featureid)
       )
     )
   ), 
@@ -65,13 +65,13 @@ p3_targets_list <- list(
     p3_density_df, 
     {
       df_source <- p2_att_wide|>
-        select(c(comid, CAT_BASIN_SLOPE)) |>
+        select(c(featureid, CAT_BASIN_SLOPE)) |>
         mutate(
-          comid = as.character(comid), 
+          featureid = as.character(featureid), 
           data_source = "NHD", 
-          id_name = "comid"
+          id_name = "featureid"
         ) |>
-        rename(id = comid) |>
+        rename(id = featureid) |>
         na.omit()
       
       df_target <- p2_rescaled_wide|>
