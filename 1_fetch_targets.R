@@ -110,9 +110,9 @@ p1_targets_list <- list(
   ),
   
   # ============================================================================
-  # names
+  # what are your columns called?
   # ============================================================================
-  # what are your columns called
+  # what is the unique id for each source and target geometry?
   tar_target(
     p1_source_id_name, 
     "featureid"
@@ -123,6 +123,7 @@ p1_targets_list <- list(
     "huc12"
   ), 
   
+  # what is the geometry column called in your spatial dataframes?
   tar_target(
     p1_source_geom_name, 
     "geom"
@@ -133,6 +134,13 @@ p1_targets_list <- list(
     "shape"
   ), 
   
+  # what are the variables and their associated values called in your attributes dataframe?
+  # you want your dataframe to look like this (column order does not matter):
+  #       | p1_source_var_name | p1_source_id_name | p1_source_value_name | others ...     |
+  #       |        .           |          .        |            .         |         .      |
+  #       |        .           |          .        |            .         |         .      |
+  #       |        .           |          .        |            .         |         .      |
+  # e.g., | characteristic_id  | feature_id        | characteristic_value | percent_nodata |
   tar_target(
     p1_source_var_name, 
     "characteristic_id"
