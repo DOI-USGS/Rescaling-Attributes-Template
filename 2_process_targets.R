@@ -6,23 +6,29 @@ p2_targets_list <- list(
   # ============================================================================
   # prep the spatial geometries
   # ============================================================================
+  # pick your projection, albers equal area is generally good for CONUS
+  tar_target(
+    p2_proj, 
+    5070                                                     
+  ), 
+  
   # do a spatial transformation 
   tar_target(
     p2_source_transformed, 
     p1_source |>
-      sf::st_transform(5070) # albers equal area
+      sf::st_transform(p2_proj) 
   ),
   
   tar_target(
     p2_target_transformed, 
     p1_target |>
-      sf::st_transform(5070) # albers equal area
+      sf::st_transform(p2_proj)
   ),
   
   tar_target(
     p2_aoi_transformed, 
     p1_aoi |>
-      sf::st_transform(5070) # albers equal area
+      sf::st_transform(p2_proj) 
   ), 
   
   # subset to AOI
@@ -58,7 +64,7 @@ p2_targets_list <- list(
     }
   ),
   
-  # if there are duplicate IDs in target, deduplicate
+  # if there are duplicate IDs in target, de-duplicate
   # sometimes, the WBD will have a geometry with a small dangling pixel that creates self-intersecting polygons and the dataframe will have a duplicated ID associated with each polygon.
   tar_target(
     p2_target,
@@ -197,19 +203,15 @@ p2_targets_list <- list(
   # ============================================================================
   # rescale attributes
   # ============================================================================
-  # let's rescale with a area weighted mean
+  # let's rescale with a area weighted mean aggregation method
   tar_target(
-    p2_rescaled,
-    p2_att_long |>
-      group_by(pick(eval(p1_target_id_name)), pick(eval(p1_source_var_name))) |>
-      summarize(
-        rescaled_value = weighted.mean(
-          x = across(eval(p1_source_value_name)),
-          w = across(intersection_areasqkm),
-          na.rm = TRUE),
-        .groups = 'drop'
-       ) |>
-      arrange(across(all_of(p1_source_var_name)))
+    p2_rescaled, 
+    rescale_weighted_mean(
+      in_df = p2_att_long, 
+      target_id_name = p1_target_id_name, 
+      source_var_name = p1_source_var_name, 
+      source_value_name = p1_source_value_name
+    )
   ),
 
   # reformat the results as wide format
@@ -234,7 +236,7 @@ p2_targets_list <- list(
   ),
   # ============================================================================
   
-  # targets search path 
+  # targets search path; these are the libraries targets loads in and the order in which R searches to find functions 
   tar_target(
     p2_search, 
     search()
