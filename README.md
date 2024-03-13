@@ -3,9 +3,12 @@
 
 <img src="figures/doc_motivation.jpg" width="400" alt="Map of a HUC12 catchment where the outlet is the Delaware River Basin above Ranconcas Creek. The smaller NHDPlus catchments are nestled within the catchment except for one small catchment that crosses the HUC12 boundary at the outlet. There are two prominent labels: (1) `We have data here`, which points to the smaller NHDPlus catchments, and (2) `We want data here`, which points to the HUC12 boundary. The map also depicts rivers/streams and uses the World Topo Map as a base map.">
 
+This repo contains a template {targets} pipeline for rescaling attributes to your intended spatial polygons. 
+
+## Motivation 
 In WMA, our models and projects work with their own special geospatial boundaries. Often, we find ourselves wanting to use the data processed to a certain polygon, but first, we need that data tied to our polygons. The hard way of doing that is to recreate the initial study, and use our polygons to aggregate data. But an easier way, to get a close estimate of the values we need, is to find the amount of overlap between the two polygons, and rescale those attributes with a simple weighted mean or other aggregation methods that make sense for the data in question.​
 
-This kind of rescaling has happened a few times that I have tried to document in the table below: 
+This kind of rescaling has happened a few times that I have tried to document them in the table below: 
 | Project      | Source Attributes     | Source Polygons | Target Polygons                | Repo Link | Data Release |
 | :----------- | :-------------------- | :-------------- | :----------------------------- | :-------- | :----------- |
 | HyTest       | NHM-PRMS              |                 |                                |           |              |
@@ -15,8 +18,7 @@ This kind of rescaling has happened a few times that I have tried to document in
 | RIMBE-WM     | Geospatial Attributes | NHDPlus V2.1    | WBD 10-2020 HUC 12 (mainstems) |           |              |
 | RIMBE-SED    | SEDAC                 | County          | WBD 10-2020 HUC 12 (mainstems) |           |              |
 
-Realizing that this is a problem that will keep coming up, and attempting to reduce duplicated workflows, we have decided to make a template pipeline that can take in any source and/or target polygon. This repo contains a template {targets} pipeline for rescaling attributes to your intended spatial polygons. 
-
+Realizing that this is a problem that will keep coming up, and attempting to reduce duplicated workflows, we have decided to make a template pipeline that can take in any source and/or target polygon. 
 
 ## Process
 The pipeline takes in a set of variables of interest (a subset of the "CAT_[attribute]" in `nhdplusTools::get_characteristics_metadata()`). As of Feb. 2024, the pipeline has only been stress-tested with ~1,254 variables of interest as opposed to the full 14,139 available in the dataset. 
@@ -27,13 +29,13 @@ In phase 2, weights are built using `ncdfgeom::calculate_area_intersection_weigh
 
 ![](figures/formulas_gdptools.png)
 
-Phase 3 contains some density plots and maps built for a one variable to ensure the pipeline is running as intended. Phase 4 contains one map emphasizing areas where the weights should add to one. Caution should be taken in areas where they do not. 
+Phase 3 contains a density plots and choropleth maps built for a one variable of interest to ensure the pipeline is running as intended. Phase 4 contains one map emphasizing areas where the weights should add to one. Caution should be taken in areas where they do not. In addition, we output a flagged version of the weights table where target polygons are flagged if their weights did not add to one. 
 
 ![](figures/doc_process.png)
 
 
 ## Outputs
-The pipeline produces two outputs a weights table and a rescaled attributes table both in `.csv` format under `2_process/out/`.
+The pipeline produces two main outputs: a weights table and a rescaled attributes table both in `.csv` format under `2_process/out/`.
 **Attributes**
 
 ![](figures/doc_outputs_att.png)
