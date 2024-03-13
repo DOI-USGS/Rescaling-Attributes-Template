@@ -1,5 +1,5 @@
 #' to make a choropleth plot of attributes on a map 
-#' @param geom_and_attribute joine spatial dataframe of geometries and attributes 
+#' @param geom_and_attribute joined spatial dataframe of geometries and attributes 
 #' @param att attribute of interest in string format
 #' @param file_out_path string path of ggplot file with extension
 

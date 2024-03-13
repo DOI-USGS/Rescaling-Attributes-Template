@@ -4,14 +4,14 @@ source('4_qc/src/check.R')
 # targets list
 p4_targets_list <- list(
   # ============================================================================
-  # plot maps
+  # plot maps to see your spatial aggregation units
   # ============================================================================
   # (1) source
   tar_target(
     p4_map_source, 
     plot_geometry(
       geometry = p2_source,
-      file_out = "p4_map_source.png", 
+      file_out_path = "4_qc/out/p4_map_source.png", 
       border_color = "#FF407D"
     ), 
     format = "file"
@@ -22,7 +22,7 @@ p4_targets_list <- list(
     p4_map_target, 
     plot_geometry(
       geometry = p2_source,
-      file_out = "p4_map_target.png", 
+      file_out = "4_qc/out/p4_map_target.png", 
       border_color = "#40679E"
     ), 
     format = "file"
@@ -53,21 +53,23 @@ p4_targets_list <- list(
   ),
 
   # visualize
+  # you want to see weights summing to one everywhere on the map
   tar_target(
     p4_weights_map,
     make_attribute_map(
       geom_and_att = p4_target,
-      att = "sum_intersection_areasqkm_over_target_areasqkm",
+      att = "sum_int_over_target",
       file_out_path = "4_qc/out/p4_weights_map.png"
     ),
     format = "file"
   ), 
-
+  
+  # you want to see the boxplot of points as close to one as possible
   tar_target(
     p4_weights_sum_boxplot,
     {
       ggplot(p4_target) +
-        geom_boxplot(aes(y = sum_intersection_areasqkm_over_target_areasqkm))
+        geom_boxplot(aes(y = sum_int_over_target))
       ggsave("4_qc/out/p4_weights_boxplot.png")
     },
     format = "file"
@@ -82,7 +84,7 @@ p4_targets_list <- list(
     p4_weights_qc |>
       mutate(
         flag = cut(
-          sum_intersection_areasqkm_over_target_areasqkm,
+          sum_int_over_target,
           breaks = c(-Inf, 0, 0.9, 1.001, Inf),
           labels = c("ugly neg", "bad", "good", "ugly pos"),
           right = FALSE,

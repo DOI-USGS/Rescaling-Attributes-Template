@@ -51,13 +51,14 @@ make_density_summary_df <- function(density_df, att){
 }
 
 
+
 #' to plot the density function by source and target attributes 
 #' @param density_df long dataframe of all source and target attributes
 #' @param density_summary dataframe of min, mean, max calculated from attributes by source and target 
 #' @param att attribute of interest in string format
-#' @param file_out string name of ggplot file with extension
+#' @param file_out_path string path of ggplot file with extension
 
-plot_density <- function(density_df, density_summary, att, file_out){
+plot_density <- function(density_df, density_summary, att, file_out_path){
   ggplot() +
     geom_density(data = density_df,
                  aes(x = .data[[att]],
@@ -75,7 +76,7 @@ plot_density <- function(density_df, density_summary, att, file_out){
     theme_bw() +
     theme(legend.position = "bottom")
   
-  ggsave(paste0("3_visualize/out/", file_out))
+  ggsave(file_out_path)
 }
 
 

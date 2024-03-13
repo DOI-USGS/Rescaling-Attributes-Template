@@ -92,7 +92,7 @@ p3_targets_list <- list(
       density_df = p3_density_df, 
       density_summary = p3_density_summary, 
       att = p3_attribute_to_plot, 
-      file_out = "p3_density_comp.png"
+      file_out_path = "3_visualize/out/p3_density_comp.png"
     )
   )
 )

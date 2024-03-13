@@ -1,11 +1,9 @@
-
 #' make a map of geometry borders
 #' @param geometry sf geometry 
-#' @param file_out string name of ggplot file with extension 
+#' @param file_out_path string path of ggplot file with extension
 #' @param border_color geometry border colors, defaults to black 
-#' @param geom_fill attribute in string format if you want to fill in the boundaries with color, defaults to NA
 
-plot_geometry <- function(geometry, file_out, border_color = "black"){
+plot_geometry <- function(geometry, file_out_path, border_color = "black"){
   # for basemap
   my_states <- sf::st_as_sf(
     maps::map(
@@ -40,12 +38,10 @@ plot_geometry <- function(geometry, file_out, border_color = "black"){
     ) +
     coord_sf(xlim = xlimit , ylim = ylimit) 
   
-  ggsave(paste0("4_qc/out/", file_out))
+  ggsave(file_out_path)
 }
 
-# labs(fill = "sums to \none?",
-#      title = "Sum of Weights On Target Geometry.",
-#      subtitle = "weights built with ncdfgeom (normalize = TRUE)\nshould sum to one on target geometries!")
+
 
 #' build the dataframe to be used for QCing 
 #' @param weights_plus the augmented weights df with source and target and intersection areas 
@@ -57,7 +53,7 @@ build_qc_df <- function(weights_plus, target_id_name){
     group_by(.data[[target_id_name]]) |>
     summarize(sum_intersection_areasqkm = sum(intersection_areasqkm),
               num_obs = n(),
-              sum_intersection_areasqkm_over_target_areasqkm = sum_intersection_areasqkm/unique(target_areasqkm))
+              sum_int_over_target = sum_intersection_areasqkm/unique(target_areasqkm))
   return(qc_df)
 }
 
