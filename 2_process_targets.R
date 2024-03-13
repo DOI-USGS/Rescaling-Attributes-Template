@@ -153,7 +153,9 @@ p2_targets_list <- list(
   #       |        .           |          .        |            .         |         .      |
   #       |        .           |          .        |            .         |         .      |
   #       |        .           |          .        |            .         |         .      |
+  #
   # e.g., | characteristic_id  | feature_id        | characteristic_value | percent_nodata |
+  #       |        .           |          .        |            .         |         .      |
   
   # in this example, we will pull attributes for NHDPlusV2 catchments using some handy functions and reformat it
   tar_target(
@@ -214,7 +216,7 @@ p2_targets_list <- list(
     )
   ),
 
-  # reformat the results as wide format
+  # cast the results as wide format
   tar_target(
     p2_rescaled_wide,
     p2_rescaled |>

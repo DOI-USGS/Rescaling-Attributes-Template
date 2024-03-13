@@ -58,11 +58,11 @@ make_unique_id <- function(source, id){
 }
 
 
-#' rescale attributes with area weighted mean aggregation method
+#' to rescale attributes with area weighted mean aggregation method
 #' @param in_df attribute dataframe for each intersection of source and target geometries in long format
-#' @param target_id_name what you call you ID column in target geometries, e.g., "huc12"
-#' @param source_var_name what you call your variables in the source attribute dataframe, e.g., "characteristic_id"
-#' @param source_value_name what you call your value column in the source attribute dataframe, e.g., "characteristic_value"
+#' @param target_id_name unique ID for target geometry, e.g., "huc12"
+#' @param source_var_name variable column name in the source attribute dataframe, e.g., "characteristic_id"
+#' @param source_value_name value column name in the source attribute dataframe, e.g., "characteristic_value"
 
 rescale_weighted_mean <- function(
     in_df, target_id_name, source_var_name, source_value_name

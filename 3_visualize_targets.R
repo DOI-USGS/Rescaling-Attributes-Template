@@ -7,7 +7,7 @@ p3_targets_list <- list(
   # ============================================================================
   # choropleth plot 
   # ============================================================================
-  # set the attribute name you want to plot
+  # set the attribute variable you want to plot
   tar_target(
     p3_attribute_to_plot, 
     "CAT_BASIN_SLOPE"
@@ -32,7 +32,7 @@ p3_targets_list <- list(
     make_attribute_map(
       geom_and_att = p3_source,
       att = p3_attribute_to_plot,
-      file_out = "p3_source_attribute.png"
+      file_out_path = "3_visualize/out/p3_source_attribute.png"
     )
   ), 
 
@@ -55,7 +55,7 @@ p3_targets_list <- list(
     make_attribute_map(
       geom_and_att = p3_target,
       att = p3_attribute_to_plot,
-      file_out = "p3_target_attribute.png"
+      file_out_path = "3_visualize/out/p3_target_attribute.png"
     )
   ), 
 

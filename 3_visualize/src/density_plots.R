@@ -1,9 +1,9 @@
-#' build a density dataframe for ggplot 
+#' to build a density dataframe for ggplot 
 #' @param source_att wide format dataframe of source attributes
-#' @param source_id_name unique ID for source geometery, e.g., "featureid"
+#' @param source_id_name unique ID for source geometry, e.g., "featureid"
 #' @param source_label legend label of source data set in string format, e.g., "NHD"
 #' @param rescaled_att wide format dataframe of rescaled attributes
-#' @param target_id_name unique ID for target geometery, e.g., "huc12"
+#' @param target_id_name unique ID for target geometry, e.g., "huc12"
 #' @param target_label egend label of target data set in string format, e.g., "WBD"
 #' @param att attribute of interest in string format
 
@@ -37,7 +37,7 @@ make_density_df <- function(source_att, source_id_name, source_label, rescaled_a
 
 
 
-#' calculate min, mean, max to put on the plot 
+#' to calculate min, mean, max to put on the plot 
 #' @param density_df long dataframe of all source and target attributes
 #' @param att attribute of interest in string format
 
@@ -51,7 +51,7 @@ make_density_summary_df <- function(density_df, att){
 }
 
 
-#' plot the density function by source and target attributes 
+#' to plot the density function by source and target attributes 
 #' @param density_df long dataframe of all source and target attributes
 #' @param density_summary dataframe of min, mean, max calculated from attributes by source and target 
 #' @param att attribute of interest in string format

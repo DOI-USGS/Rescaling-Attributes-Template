@@ -140,7 +140,9 @@ p1_targets_list <- list(
   #       |        .           |          .        |            .         |         .      |
   #       |        .           |          .        |            .         |         .      |
   #       |        .           |          .        |            .         |         .      |
+  #
   # e.g., | characteristic_id  | feature_id        | characteristic_value | percent_nodata |
+  #       |        .           |          .        |            .         |         .      |
   tar_target(
     p1_source_var_name, 
     "characteristic_id"
