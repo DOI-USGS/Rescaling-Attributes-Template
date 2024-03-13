@@ -6,7 +6,7 @@ p2_targets_list <- list(
   # ============================================================================
   # prep the spatial geometries
   # ============================================================================
-  # pick your projection, albers equal area is generally good for CONUS
+  # pick your projection: albers equal area is generally good for CONUS
   tar_target(
     p2_proj, 
     5070                                                     
@@ -43,7 +43,7 @@ p2_targets_list <- list(
   ),
   
   # clean geometry types
-  # sometimes, the WBD has geometries that are not polygons or multipolygons, this pipeline will not know what to do with those
+  # sometimes, the WBD has geometries that are not polygons or multipolygons. This pipeline will not know what to do with those
   tar_target(
     p2_target_cleaned, 
     clean_geometry_type(p2_target_intersected)
@@ -94,7 +94,7 @@ p2_targets_list <- list(
     )
   ),
 
-  # write it out for convenience, but we won't be needing this target anymore
+  # write it out for convenience, but, we won't be needing this target anymore
   tar_target(
     p2_weights_write,
     {

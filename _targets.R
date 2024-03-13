@@ -1,3 +1,5 @@
+# # this code uses a pipelining package called targets. we assume you have some basic familiarity with it and proficiency in R. If you need help contact Ellie White (ewhite@usgs.gov)
+
 # ==============================================================================
 # installations
 # ==============================================================================
@@ -5,19 +7,13 @@
 # remotes::install_github("doi-usgs/ncdfgeom)
 # remotes::install_github("doi-usgs/nhdplusTools) 
 
-## if there are problems with the functions in nhdplusTools try running this 
-## it clears and re-downloads the metadata index of all the characteristics
+# # if there are problems with the functions in nhdplusTools try running this. It clears and re-downloads the metadata index of all the characteristics
 # nhdplusTools::get_characteristics_metadata(cache = FALSE)
 
 
-## authenticate ScienceBase if needed
+# # authenticate ScienceBase if needed for your datasets. The ones in our template won't need it.
+# remotes::install_github("doi-usgs/sbtools)
 # initialize_sciencebase_session(username = "blah@usgs.gov") 
-
-
-## container considerations
-## to run the pipeline from within the container, we need to set the nhdplusTools data dir so we can retrieve characteristics metadata
-# nhdplusTools::nhdplusTools_data_dir("1_fetch/out")
-
 
 
 # ==============================================================================
@@ -36,7 +32,7 @@ tar_option_set(
     "ncdfgeom", "mapdata", "maps", "data.table", "stringr",
     
     # phase 3_visualize
-    "ggmap", "cowplot", "scico", "viridis"
+    "ggmap", "scico", "viridis"
     
     # phase 4_qc
     ), 
@@ -52,21 +48,18 @@ source('2_process_targets.R')
 source('3_visualize_targets.R')
 source('4_qc_targets.R')
 
-# # partial list of targets: use this if all you want is the data
+# # partial list of targets: use this if all you want is the data. You can either pick this *or* the list below. 
 # list(p1_targets_list, p2_targets_list)
 
-# # complete list of targets: use this if you also want some plots 
-# # this could take a long time to build and plots will only work for the the data in this template pipeline
+# # complete list of targets: use this if you also want some plots. This could take a long time to build.
 list(p1_targets_list, p2_targets_list, p3_targets_list, p4_targets_list)
 
 
 # ==============================================================================
 # helper functions
 # ==============================================================================
-## you can put these in the console after the pipeline is built 
-# print(tar_meta(fields="seconds"), n = 50)
+# # you can put these in the console after the pipeline is built to profile 
 # print(tar_meta(fields="seconds") |> arrange(-seconds), n = 100)
-
 # tar_visnetwork()
 
 
