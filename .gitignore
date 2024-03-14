@@ -170,7 +170,6 @@ Thumbs.db #thumbnail cache on Windows
 
 # Session Data files
 .RData
-*.Rproj
 
 # User-specific files
 .Ruserdata
