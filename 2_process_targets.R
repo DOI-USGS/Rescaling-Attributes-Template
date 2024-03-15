@@ -63,16 +63,10 @@ p2_targets_list <- list(
   # sometimes, the WBD will have a geometry with a small dangling pixel that creates self-intersecting polygons and the dataframe will have a duplicated ID associated with each polygon.
   tar_target(
     p2_target,
-    {
-      is_unique <- nrow(p2_target_cleaned) == length(unique(p2_target_cleaned[[p1_target_id_name]]))
-      if(!is_unique){
-        warning("There are duplicate IDs in target geometry. I will deduplicate these for you, but make sure that is what you want!")
-        p2_target_ready <- dedup(p2_target_cleaned, p1_target_id_name)
-      } else {
-        p2_target_ready <- p2_target_cleaned
-      }
-      p2_target_ready
-    }
+    ensure_no_dup_ids(
+      sf = p2_target_cleaned,
+      id_name = p1_target_id_name
+    )
   ),
 
   # ============================================================================
