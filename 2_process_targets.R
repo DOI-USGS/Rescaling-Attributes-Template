@@ -122,9 +122,13 @@ p2_targets_list <- list(
   # add them to weights matrix
   tar_target(
     p2_weights_plus,
-    left_join(p2_weights, p2_areas_x, by = setNames("source_id", eval(p1_source_id_name))) |>
-      left_join(p2_areas_y, by = setNames("target_id", eval(p1_target_id_name))) |>
-      mutate(intersection_areasqkm = target_areasqkm * w)
+    add_area_to_w_mtrx(
+      weights = p2_weights,
+      areas_x = p2_areas_x,
+      areas_y = p2_areas_y,
+      source_id_name = p1_source_id_name,
+      target_id_name = p1_target_id_name
+    )
   ),
 
   # ============================================================================
