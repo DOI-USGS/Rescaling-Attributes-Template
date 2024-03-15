@@ -1,17 +1,21 @@
-# # this code uses a pipelining package called targets. we assume you have some basic familiarity with it and proficiency in R. If you need help contact Ellie White (ewhite@usgs.gov)
+# This code uses a pipelining package called targets. we assume you have some
+# basic familiarity with it and proficiency in R. If you need help contact
+# Ellie White (ewhite@usgs.gov)
 
 # ==============================================================================
-# installations
+# Installations
 # ==============================================================================
 # install.packages("targets")
 # remotes::install_github("doi-usgs/ncdfgeom)
 # remotes::install_github("doi-usgs/nhdplusTools) 
 
-# # if there are problems with the functions in nhdplusTools try running this. It clears and re-downloads the metadata index of all the characteristics
+# If there are problems with the functions in nhdplusTools try running this. It
+# clears and re-downloads the metadata index of all the characteristics.
 # nhdplusTools::get_characteristics_metadata(cache = FALSE)
 
 
-# # authenticate ScienceBase if needed for your datasets. The ones in our template won't need it.
+# Authenticate ScienceBase if needed for your datasets. The ones in our template
+# won't need it.
 # remotes::install_github("doi-usgs/sbtools)
 # initialize_sciencebase_session(username = "blah@usgs.gov") 
 
