@@ -15,8 +15,7 @@ p2_targets_list <- list(
   # do a spatial transformation 
   tar_target(
     p2_source_transformed, 
-    p1_source |>
-      sf::st_transform(p2_proj) 
+    sf::st_transform(p1_source, p2_proj)       
   ),
   
   tar_target(
