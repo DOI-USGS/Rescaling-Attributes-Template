@@ -1,12 +1,12 @@
-# scripts with functions
+# Scripts with functions
 source('4_qc/src/check.R')
 
-# targets list
+# Targets list
 p4_targets_list <- list(
   # ============================================================================
-  # plot maps to see your spatial aggregation units
+  # Plot maps to see your spatial aggregation units
   # ============================================================================
-  # (1) source
+  # (1) Source
   tar_target(
     p4_map_source, 
     plot_geometry(
@@ -17,7 +17,7 @@ p4_targets_list <- list(
     format = "file"
   ), 
   
-  # (2) target
+  # (2) Target
   tar_target(
     p4_map_target, 
     plot_geometry(
@@ -29,9 +29,10 @@ p4_targets_list <- list(
   ), 
   
   # ============================================================================
-  # do weights sum to one?
+  # Do weights sum to one?
   # ============================================================================
-  # aggregate weights on target, this is applicable to gdptools weights and ncdfgeom when normalize = TRUE
+  # Aggregate weights on target, this is applicable to gdptools weights and 
+  # ncdfgeom when normalize = TRUE.
   tar_target(
     p4_weights_qc,
     build_qc_df(
@@ -40,7 +41,7 @@ p4_targets_list <- list(
     )
   ), 
 
-  # make the spatial dataframe
+  # Make the spatial dataframe.
   tar_target(
     p4_target,
     sf::st_sf(
@@ -52,8 +53,8 @@ p4_targets_list <- list(
     )
   ),
 
-  # visualize
-  # you want to see weights summing to one everywhere on the map
+  # Visualize
+  # You want to see weights summing to one everywhere on the map.
   tar_target(
     p4_weights_map,
     make_attribute_map(
@@ -64,7 +65,7 @@ p4_targets_list <- list(
     format = "file"
   ), 
   
-  # you want to see the boxplot of points as close to one as possible
+  # You want to see the boxplot of points as close to one as possible.
   tar_target(
     p4_weights_sum_boxplot,
     {
@@ -76,9 +77,9 @@ p4_targets_list <- list(
   ),
 
   # ============================================================================
-  # flag target IDs where the weights do not add to one
+  # Flag target IDs where the weights do not add to one
   # ============================================================================
-  # make a flag column in the qc dataframe
+  # Make a flag column in the qc dataframe.
   tar_target(
     p4_sourceid_flagged,
     p4_weights_qc |>
@@ -93,7 +94,7 @@ p4_targets_list <- list(
       )
   ),
 
-  # join in with weights file
+  # Join in with weights file.
   tar_target(
     p4_weights_flagged,
     left_join(
@@ -104,14 +105,10 @@ p4_targets_list <- list(
     )
   ), 
 
-  # output another weights table with flags
+  # Output another weights table with flags.
   tar_target(
     p4_weights_flagged_write,
-    {
-      file_out <- "4_qc/out/weights_flagged.csv"
-      write_csv(p4_weights_flagged, file_out)
-      file_out
-    },
+    write_csv(p4_weights_flagged, "4_qc/out/weights_flagged.csv"),
     format = "file"
   )
 )

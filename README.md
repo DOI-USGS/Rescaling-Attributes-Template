@@ -44,6 +44,9 @@ The pipeline produces two main outputs: a weights table and a rescaled attribute
 
 ![](figures/doc_outputs_weights.png)
 
+## How to run the pipeline 
+As of 03/14/2024, you must install the developer version on ncdfgeom. You can do that by running `remotes::install_github("doi-usgs/ncdfgeom")
+` in the console. In the [current version](https://cran.r-project.org/web/packages/ncdfgeom/ncdfgeom.pdf) on CRAN (v 1.1.6) calculate_area_intersection_weights() does not include the required normalize argument, but the [development version](https://doi-usgs.github.io/ncdfgeom/reference/calculate_area_intersection_weights.html) (v 1.2.0) does.
 
 ## Profiling
 The most expensive target to build is intersecting the source polygons with the area of interest taking ~6 min. 

@@ -1,20 +1,20 @@
-# scripts with functions
+# Scripts with functions
 source('3_visualize/src/density_plots.R')
 source('3_visualize/src/spatial_maps.R')
 
-# targets list
+# Targets list
 p3_targets_list <- list(
   # ============================================================================
-  # choropleth plot 
+  # Choropleth plot 
   # ============================================================================
-  # set the attribute variable you want to plot
+  # Set the attribute variable you want to plot.
   tar_target(
     p3_attribute_to_plot, 
     "CAT_BASIN_SLOPE"
   ),
   
-  # (1) plot one source attribute
-  # first, join the geometry and the attribute dataframe
+  # (1) Plot one source attribute.
+  # First, join the geometry and the attribute dataframe.
   tar_target(
     p3_source, 
     sf::st_sf(
@@ -26,7 +26,7 @@ p3_targets_list <- list(
     )
   ), 
   
-  # second, plot
+  # Second, plot.
   tar_target(
     p3_source_att,
     make_attribute_map(
@@ -37,8 +37,8 @@ p3_targets_list <- list(
     format = "file"
   ), 
 
-  # (2) plot one target attribute
-  # first, join the geometry and the attribute dataframe
+  # (2) Plot one target attribute.
+  # First, join the geometry and the attribute dataframe.
   tar_target(
     p3_target,
     sf::st_sf(
@@ -50,7 +50,7 @@ p3_targets_list <- list(
     )
   ),
 
-  # second, plot
+  # Second, plot.
   tar_target(
     p3_target_att,
     make_attribute_map(
@@ -62,9 +62,9 @@ p3_targets_list <- list(
   ), 
 
   # ============================================================================
-  # density plot
+  # Density plot
   # ============================================================================
-  # prepare dataframe for ggplot
+  # Prepare dataframe for ggplot.
   tar_target(
     p3_density_df,
     make_density_df(
@@ -78,7 +78,7 @@ p3_targets_list <- list(
     )
   ), 
 
-  # prepare summary dataframe for ggplot
+  # Prepare summary dataframe for ggplot.
   tar_target(
     p3_density_summary,
     make_density_summary_df(
@@ -87,7 +87,7 @@ p3_targets_list <- list(
     )
   ), 
 
-  # make the plot
+  # Make the plot.
   tar_target(
     p3_density_comp,
     plot_density(

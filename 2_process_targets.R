@@ -1,18 +1,18 @@
-# scripts with functions
+# Scripts with functions
 source('2_process/src/process_data.R')
 
-# targets list
+# Targets list
 p2_targets_list <- list(
   # ============================================================================
-  # prep the spatial geometries
+  # Prep the spatial geometries
   # ============================================================================
-  # pick your projection: albers equal area is generally good for CONUS
+  # Pick your projection: albers equal area is generally good for CONUS
   tar_target(
     p2_proj, 
     5070                                                     
   ), 
   
-  # do a spatial transformation 
+  # Do a spatial transformation 
   tar_target(
     p2_source_transformed, 
     sf::st_transform(p1_source, p2_proj)       
@@ -28,7 +28,7 @@ p2_targets_list <- list(
     sf::st_transform(p1_aoi, p2_proj) 
   ), 
   
-  # subset to AOI
+  # Subset to AOI
   tar_target(
     p2_source_intersected, 
     sf::st_intersection(p2_source_transformed, p2_aoi_transformed)
@@ -48,9 +48,9 @@ p2_targets_list <- list(
   ),
   
   # ============================================================================
-  # check if there are duplicate IDs 
+  # Check if there are duplicate IDs 
   # ============================================================================
-  # if there are duplicate IDs in source, proceed anyway
+  # If there are duplicate IDs in source, proceed anyway
   tar_target(
     p2_source,
     check_no_dup_ids(
@@ -59,8 +59,10 @@ p2_targets_list <- list(
     )
   ),
   
-  # if there are duplicate IDs in target, de-duplicate
-  # sometimes, the WBD will have a geometry with a small dangling pixel that creates self-intersecting polygons and the dataframe will have a duplicated ID associated with each polygon.
+  # If there are duplicate IDs in target, de-duplicate
+  # sometimes, the WBD will have a geometry with a small dangling pixel that 
+  # creates self-intersecting polygons and the dataframe will have a duplicated 
+  # ID associated with each polygon.
   tar_target(
     p2_target,
     ensure_no_dup_ids(
@@ -70,34 +72,31 @@ p2_targets_list <- list(
   ),
 
   # ============================================================================
-  # weights matrix
+  # Weights matrix
   # ============================================================================
-  # build the matrix
+  # Build the matrix
   tar_target(
     p2_weights,
     ncdfgeom::calculate_area_intersection_weights(
       p2_source[, c(p1_source_id_name, p1_source_geom_name)],
       p2_target[, c(p1_target_id_name, p1_target_geom_name)],
-      # normalize will ensure weights are calculate with intersection area divided by *target* geometry areas
+      # normalize will ensure weights are calculate with intersection area 
+      # divided by *target* geometry areas
       normalize = TRUE
     )
   ),
 
-  # write it out for convenience, but, we won't be needing this target anymore
+  # Write it out for convenience, but, we won't be needing this target anymore.
   tar_target(
     p2_weights_write,
-    {
-      fileout <- "2_process/out/source_target_weights.csv"
-      write_csv(p2_weights, fileout)
-      fileout
-    },
+    write_csv(p2_weights, "2_process/out/source_target_weights.csv"),
     format = "file"
   ),
 
   # ============================================================================
-  # add area to weights
+  # Add area to weights
   # ============================================================================
-  # calculate source areas
+  # Calculate source areas
   tar_target(
     p2_areas_x,
     tibble(
@@ -108,7 +107,7 @@ p2_targets_list <- list(
     )
   ),
 
-  # calculate target areas
+  # Calculate target areas
   tar_target(
     p2_areas_y,
     tibble(
@@ -119,7 +118,7 @@ p2_targets_list <- list(
     )
   ),
 
-  # add them to weights matrix
+  # Add them to weights matrix
   tar_target(
     p2_weights_plus,
     add_area_to_w_mtrx(
@@ -132,10 +131,10 @@ p2_targets_list <- list(
   ),
 
   # ============================================================================
-  # pull attributes and process
+  # Pull attributes and process
   # ============================================================================
-  # read in your attributes table
-  # you want your dataframe to look like this (column order does not matter):
+  # Read in your attributes table
+  # You want your dataframe to look like this (column order does not matter):
   # | p1_source_var_name | p1_source_id_name | p1_source_value_name | others ...     |
   # |        .           |          .        |            .         |         .      |
   # |        .           |          .        |            .         |         .      |
@@ -157,7 +156,7 @@ p2_targets_list <- list(
     pattern = map(p1_vars)
   ),
 
-  # format (_wider) for the join with weights
+  # Format (_wider) for the join with weights
   tar_target(
     p2_att_wide,
     p2_att_raw |>
@@ -168,7 +167,7 @@ p2_targets_list <- list(
       )
   ),
 
-  # join in with weights matrix
+  # Join in with weights matrix
   tar_target(
     p2_att_joined,
     left_join(
@@ -179,7 +178,7 @@ p2_targets_list <- list(
     )
   ),
 
-  # format (_longer) for the multiplication by weights
+  # Format (_longer) for the multiplication by weights
   tar_target(
     p2_att_long,
     p2_att_joined |>
@@ -192,9 +191,9 @@ p2_targets_list <- list(
   ),
 
   # ============================================================================
-  # rescale attributes
+  # Rescale attributes
   # ============================================================================
-  # let's rescale with a area weighted mean aggregation method
+  # Let's rescale with a area weighted mean aggregation method.
   tar_target(
     p2_rescaled, 
     rescale_weighted_mean(
@@ -205,7 +204,7 @@ p2_targets_list <- list(
     )
   ),
 
-  # cast the results as wide format
+  # Cast the results as wide format.
   tar_target(
     p2_rescaled_wide,
     p2_rescaled |>
@@ -216,19 +215,17 @@ p2_targets_list <- list(
   ),
 
   # ============================== OUTPUTS =====================================
+  # Write out the rescaled values.
   tar_target(
     p2_rescaled_write,
-    {
-      file_out <- "2_process/out/rescaled_attributes.csv"
-      write_csv(p2_rescaled_wide, file_out)
-      file_out
-    },
+    write_csv(p2_rescaled_wide, "2_process/out/rescaled_attributes.csv"),
     format = "file"
   ),
   # ============================================================================
   
-  # targets search path; these are the libraries targets loads in and the order
-  # in which R searches to find functions
+  # Targets search path
+  # These are the libraries targets loads in and the order in which R searches 
+  # to find functions.
   tar_target(
     p2_search, 
     search()
