@@ -66,6 +66,3 @@ list(p1_targets_list, p2_targets_list, p3_targets_list, p4_targets_list)
 # print(tar_meta(fields="seconds") |> arrange(-seconds), n = 100)
 # tar_visnetwork()
 
-
-
-
