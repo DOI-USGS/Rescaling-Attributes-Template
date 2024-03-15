@@ -53,13 +53,10 @@ p2_targets_list <- list(
   # if there are duplicate IDs in source, proceed anyway
   tar_target(
     p2_source,
-    {
-      is_unique <- nrow(p2_source_intersected) == length(unique(p2_source_intersected[[p1_source_id_name]]))
-      if(!is_unique){
-        warning("There are duplicate IDs in source geometry. First, you  need to handle these cases: either deduplicate or make a unique ID. The pipeline will run, but be ware that at these duplicated geometries attributes are unreliable because implicit assumptions are made when aggregating values.")
-      }
-      p2_source_intersected
-    }
+    check_no_dup_ids(
+      sf = p2_source_intersected,
+      id_name = p1_source_id_name
+    )
   ),
   
   # if there are duplicate IDs in target, de-duplicate
