@@ -57,7 +57,8 @@ p3_targets_list <- list(
       geom_and_att = p3_target,
       att = p3_attribute_to_plot,
       file_out_path = "3_visualize/out/p3_target_attribute.png"
-    )
+    ),
+    format = "file"
   ), 
 
   # ============================================================================
