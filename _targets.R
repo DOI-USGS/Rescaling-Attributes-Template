@@ -44,8 +44,7 @@ tar_option_set(
 )
 
 # suppress package warnings
-options(tidyverse.quiet = TRUE)
-options(dplyr.summarise.inform = FALSE)
+options(tidyverse.quiet = TRUE, dplyr.summarise.inform = FALSE)
 
 source('1_fetch_targets.R')
 source('2_process_targets.R')
