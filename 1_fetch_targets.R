@@ -38,16 +38,11 @@ p1_targets_list <- list(
   # download the polygons and put them in "1_fetch/out"
   tar_target(
     p1_source_dl, 
-    {
-      path <- "1_fetch/out"
-      fileout <- file.path(path, "reference_catchments.gpkg")
-      sbtools::item_file_download(
-        "61295190d34e40dd9c06bcd7", 
-        names = basename(fileout),
-        destinations = fileout
-      )
-      fileout
-    }, 
+    sbtools::item_file_download(
+      "61295190d34e40dd9c06bcd7", 
+      names = "reference_catchments.gpkg",
+      destinations = "1_fetch/out/reference_catchments.gpkg"
+    ), 
     format = "file"
   ),
   
