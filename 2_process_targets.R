@@ -114,10 +114,7 @@ p2_targets_list <- list(
     tibble(
       target_id = p2_target[[p1_target_id_name]],
       target_areasqkm = as.numeric(
-        units::set_units(
-          sf::st_area(p2_target),
-          "km^2"
-        )
+        units::set_units(sf::st_area(p2_target), "km^2")
       )
     )
   ),
