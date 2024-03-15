@@ -68,9 +68,9 @@ p4_targets_list <- list(
   tar_target(
     p4_weights_sum_boxplot,
     {
-      ggplot(p4_target) +
-        geom_boxplot(aes(y = sum_int_over_target))
-      ggsave("4_qc/out/p4_weights_boxplot.png")
+      out_boxplot <- ggplot(p4_target) +
+        geom_boxplot(aes(y = sum_int_over_target)) 
+      ggsave(plot = out_boxplot, "4_qc/out/p4_weights_boxplot.png")
     },
     format = "file"
   ),
