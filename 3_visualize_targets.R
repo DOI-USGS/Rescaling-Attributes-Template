@@ -1,120 +1,101 @@
-# scripts with functions
-# source('3_visualize/src/density_plots.R')
-# source('3_visualize/src/spatial_maps.R')
+# Scripts with functions
+source('3_visualize/src/density_plots.R')
+source('3_visualize/src/spatial_maps.R')
 
-# targets list
+# Targets list
 p3_targets_list <- list(
   # ============================================================================
-  # choropleth plot 
+  # Choropleth plot 
   # ============================================================================
-  # plot one source attribute
+  # Set the attribute variable you want to plot.
+  tar_target(
+    p3_attribute_to_plot, 
+    "CAT_BASIN_SLOPE"
+  ),
+  
+  # (1) Plot one source attribute.
+  # First, join the geometry and the attribute dataframe.
   tar_target(
     p3_source, 
     sf::st_sf(
       dplyr::inner_join(
         p2_source, 
         p2_att_joined, 
-        by = join_by(featureid == comid)
+        by = p1_source_id_name
       )
     )
   ), 
   
+  # Second, plot.
   tar_target(
-    p3_source_att, 
-    {
-      ggplot() + 
-        geom_sf(
-          data = p3_source, 
-          aes(fill = CAT_BASIN_SLOPE, col = CAT_BASIN_SLOPE)) +
-        scale_fill_viridis(option = "cividis") +
-        scale_color_viridis(option = "cividis")
-      ggsave("3_visualize/out/p3_source_attribute.png")
-    }
+    p3_source_att,
+    make_attribute_map(
+      geom_and_att = p3_source,
+      att = p3_attribute_to_plot,
+      file_out_path = "3_visualize/out/p3_source_attribute.png"
+    ),
+    format = "file"
   ), 
-  
-  # plot one target attribute
+
+  # (2) Plot one target attribute.
+  # First, join the geometry and the attribute dataframe.
   tar_target(
-    p3_target, 
+    p3_target,
     sf::st_sf(
       dplyr::inner_join(
-        p2_target, 
-        p2_rescaled_wide, 
-        by = join_by(huc12)
+        p2_target,
+        p2_rescaled_wide,
+        by = p1_target_id_name
       )
     )
-  ), 
-  
+  ),
+
+  # Second, plot.
   tar_target(
-    p3_target_att, 
-    {
-      ggplot() + 
-        geom_sf(
-          data = p3_target, 
-          aes(fill = CAT_BASIN_SLOPE, col = CAT_BASIN_SLOPE)) +
-        scale_fill_viridis(option = "cividis") +
-        scale_color_viridis(option = "cividis")
-      ggsave("3_visualize/out/p3_target_attribute.png")
-    }
+    p3_target_att,
+    make_attribute_map(
+      geom_and_att = p3_target,
+      att = p3_attribute_to_plot,
+      file_out_path = "3_visualize/out/p3_target_attribute.png"
+    ),
+    format = "file"
   ), 
-  
+
   # ============================================================================
-  # density plot
+  # Density plot
   # ============================================================================
-  # prepare dataframe for ggplot
+  # Prepare dataframe for ggplot.
   tar_target(
-    p3_density_df, 
-    {
-      df_source <- p2_att_wide|>
-        select(c(comid, CAT_BASIN_SLOPE)) |>
-        mutate(
-          comid = as.character(comid), 
-          data_source = "NHD", 
-          id_name = "comid"
-        ) |>
-        rename(id = comid) |>
-        na.omit()
-      
-      df_target <- p2_rescaled_wide|>
-        select(c(huc12, CAT_BASIN_SLOPE)) |>
-        mutate(data_source = "WBD", id_name = "huc12") |>
-        rename(id = huc12) |>
-        na.omit()
-      
-      bind_rows(df_source, df_target)
-    }
+    p3_density_df,
+    make_density_df(
+      source_att = p2_att_wide,
+      source_id_name = p1_source_id_name,
+      source_label = "NHD",
+      rescaled_att = p2_rescaled_wide,
+      target_id_name = p1_target_id_name,
+      target_label = "WBD",
+      att = p3_attribute_to_plot
+    )
   ), 
-  
-  # prepare summary dataframe for ggplot
+
+  # Prepare summary dataframe for ggplot.
   tar_target(
-    p3_density_summary, 
-    p3_density_df |>
-      group_by(data_source) |>
-      summarize(min = min(CAT_BASIN_SLOPE), 
-                mean = mean(CAT_BASIN_SLOPE),
-                max = max(CAT_BASIN_SLOPE))
+    p3_density_summary,
+    make_density_summary_df(
+      density_df = p3_density_df, 
+      att = p3_attribute_to_plot
+    )
   ), 
-  
-  # make the plot
+
+  # Make the plot.
   tar_target(
-    p3_density_comp, 
-    {
-      ggplot() +
-        geom_density(data = p3_density_df, 
-                     aes(x = CAT_BASIN_SLOPE, 
-                         fill = data_source, 
-                         col = data_source), 
-                     alpha = 0.2) +
-        geom_vline(data = p3_density_summary, 
-                   mapping = aes(xintercept = mean, 
-                                 color = data_source), 
-                   linetype = "dashed", 
-                   show.legend = TRUE) + 
-        scale_color_manual(values = c("#FF407D", "#40679E")) +
-        scale_fill_manual(values = c("#FF407D", "#40679E")) +
-        labs(fill = "Geometry", col = "Geometry") +
-        theme_bw() +
-        theme(legend.position = "bottom")
-      ggsave("3_visualize/out/p3_density_comp.png")
-    }
+    p3_density_comp,
+    plot_density(
+      density_df = p3_density_df, 
+      density_summary = p3_density_summary, 
+      att = p3_attribute_to_plot, 
+      file_out_path = "3_visualize/out/p3_density_comp.png"
+    ),
+    format = "file"
   )
 )

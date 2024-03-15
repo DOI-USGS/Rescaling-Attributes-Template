@@ -1,203 +1,114 @@
-# targets list
+# Scripts with functions
+source('4_qc/src/check.R')
+
+# Targets list
 p4_targets_list <- list(
   # ============================================================================
-  # plot source map
+  # Plot maps to see your spatial aggregation units
   # ============================================================================
+  # (1) Source
   tar_target(
     p4_map_source, 
-    {
-      my_states <- sf::st_as_sf(
-        maps::map(
-          "state", 
-          plot = FALSE,
-          fill = TRUE
-        )
-      )
-      
-      bbox <- st_bbox(p2_source)
-      xlimit <- c(bbox$xmin - 0.1*(bbox$xmax-bbox$xmin), bbox$xmax + 0.1*(bbox$xmax-bbox$xmin))
-      ylimit <- c(bbox$ymin - 0.1*(bbox$ymax-bbox$ymin), bbox$ymax + 0.1*(bbox$ymax-bbox$ymin))
-      
-      ggplot() +
-        geom_sf(
-          data = p2_source, 
-          col = "#FF407D", 
-          fill = NA 
-        ) +
-        ggtitle("Area of Interest") +
-        geom_sf(
-          data = my_states, 
-          col = "grey50", 
-          fill = NA
-        ) +
-        geom_sf_text(
-          data = my_states, 
-          aes(label = ID), 
-          colour = "grey50"
-        ) +
-      coord_sf(xlim = xlimit , ylim = ylimit) 
-      ggsave("4_qc/out/p4_map_source.png")
-    }, 
+    plot_geometry(
+      geometry = p2_source,
+      file_out_path = "4_qc/out/p4_map_source.png", 
+      border_color = "#FF407D"
+    ), 
     format = "file"
   ), 
   
-  # ============================================================================
-  # plot target map
-  # ============================================================================
+  # (2) Target
   tar_target(
     p4_map_target, 
-    {
-      my_states <- sf::st_as_sf(
-        maps::map(
-          "state", 
-          plot = FALSE,
-          fill = TRUE
-        )
-      )
-      
-      bbox <- st_bbox(p2_target)
-      xlimit <- c(bbox$xmin - 0.1*(bbox$xmax-bbox$xmin), bbox$xmax + 0.1*(bbox$xmax-bbox$xmin))
-      ylimit <- c(bbox$ymin - 0.1*(bbox$ymax-bbox$ymin), bbox$ymax + 0.1*(bbox$ymax-bbox$ymin))
-      
-      ggplot() +
-        geom_sf(
-          data = p2_target, 
-          col = "#40679E", 
-          fill = NA
-        ) +
-        ggtitle("Area of Interest") +
-        geom_sf(
-          data = my_states, 
-          col = "grey50", 
-          fill = NA
-        ) +
-        geom_sf_text(
-          data = my_states, 
-          aes(label = ID), 
-          colour = "grey50"
-        ) +
-        coord_sf(xlim = xlimit , ylim = ylimit)
-      ggsave("4_qc/out/p4_map_target.png")
-    }, 
+    plot_geometry(
+      geometry = p2_source,
+      file_out = "4_qc/out/p4_map_target.png", 
+      border_color = "#40679E"
+    ), 
     format = "file"
   ), 
   
   # ============================================================================
-  # do weights sum to one?
+  # Do weights sum to one?
   # ============================================================================
-  # aggregate weights on target, this is applicable to gdptools weights and ncdfgeom when normalize = TRUE
+  # Aggregate weights on target, this is applicable to gdptools weights and 
+  # ncdfgeom when normalize = TRUE.
   tar_target(
-    p4_weights_qc, 
-    p2_weights_plus |>
-      na.omit() |>
-      group_by(huc12) |>
-      summarize(sum_intersection_areasqkm = sum(intersection_areasqkm),
-                num_obs = n(),
-                sum_intersection_areasqkm_over_target_areasqkm = sum_intersection_areasqkm/unique(huc12_areasqkm))
+    p4_weights_qc,
+    build_qc_df(
+      weights_plus = p2_weights_plus, 
+      target_id_name = p1_target_id_name
+    )
   ), 
-  
-  # make the spatial dataframe
+
+  # Make the spatial dataframe.
   tar_target(
     p4_target,
     sf::st_sf(
       dplyr::inner_join(
-        p2_target, 
-        p4_weights_qc, 
-        by = join_by(huc12)
+        p2_target,
+        p4_weights_qc,
+        by = p1_target_id_name
       )
     )
+  ),
+
+  # Visualize
+  # You want to see weights summing to one everywhere on the map.
+  tar_target(
+    p4_weights_map,
+    make_attribute_map(
+      geom_and_att = p4_target,
+      att = "sum_int_over_target",
+      file_out_path = "4_qc/out/p4_weights_map.png"
+    ),
+    format = "file"
   ), 
   
-  # visualize
+  # You want to see the boxplot of points as close to one as possible.
   tar_target(
-    p4_weights_map, 
+    p4_weights_sum_boxplot,
     {
-      my_states <- sf::st_as_sf(
-        maps::map(
-          "state", 
-          plot = FALSE,
-          fill = TRUE
-        )
-      )
-      
-      bbox <- st_bbox(p2_target)
-      xlimit <- c(bbox$xmin - 0.1*(bbox$xmax-bbox$xmin), bbox$xmax + 0.1*(bbox$xmax-bbox$xmin))
-      ylimit <- c(bbox$ymin - 0.1*(bbox$ymax-bbox$ymin), bbox$ymax + 0.1*(bbox$ymax-bbox$ymin))
-      
-      ggplot() + 
-        geom_sf(
-          data = p4_target, 
-          aes(fill = sum_intersection_areasqkm_over_target_areasqkm),
-          col = "#40679E" 
-        ) +
-        scale_fill_scico(palette = 'vik') +
-        labs(fill = "sums to \none?", 
-             title = "Sum of Weights On Target Geometry.", 
-             subtitle = "weights built with ncdfgeom (normalize = TRUE)\nshould sum to one on target geometries!") +
-        geom_sf(
-          data = my_states, 
-          col = "grey50", 
-          fill = NA
-        ) +
-        geom_sf_text(
-          data = my_states, 
-          aes(label = ID), 
-          colour = "grey50", 
-          size = 2
-        ) +
-        coord_sf(xlim = xlimit , ylim = ylimit)
-      ggsave("4_qc/out/p4_weights_map.png")
-    }, 
+      out_boxplot <- ggplot(p4_target) +
+        geom_boxplot(aes(y = sum_int_over_target)) 
+      ggsave(plot = out_boxplot, "4_qc/out/p4_weights_boxplot.png")
+    },
     format = "file"
   ),
-  
-  tar_target(
-    p4_weights_sum_boxplot, 
-    {
-      ggplot(p4_target) + 
-        geom_boxplot(aes(y = sum_intersection_areasqkm_over_target_areasqkm))
-      ggsave("4_qc/out/p4_weights_boxplot.png")
-    }, 
-    format = "file"
-  ), 
-  
+
   # ============================================================================
-  # flag target IDs where the weights do not add to one
+  # Flag target IDs where the weights do not add to one
   # ============================================================================
-  # make a flag column in the qc dataframe
+  # Make a flag column in the qc dataframe.
   tar_target(
     p4_sourceid_flagged,
     p4_weights_qc |>
       mutate(
         flag = cut(
-          sum_intersection_areasqkm_over_target_areasqkm,
+          sum_int_over_target,
           breaks = c(-Inf, 0, 0.9, 1.001, Inf),
           labels = c("ugly neg", "bad", "good", "ugly pos"),
-          right = FALSE, 
+          right = FALSE,
           dig.lab = 3
         )
       )
   ),
-  
-  # join in with weights file
-  tar_target(
-    p4_weights_flagged, 
-    left_join(
-      p2_weights_plus, 
-      p4_sourceid_flagged |>
-        select(c(huc12, flag)), 
-      by = join_by(huc12)
-    )
-  ),
 
-  # output another weights table with flags
+  # Join in with weights file.
+  tar_target(
+    p4_weights_flagged,
+    left_join(
+      p2_weights_plus,
+      p4_sourceid_flagged |>
+        select(all_of(c(p1_target_id_name, "flag"))),
+      by = p1_target_id_name
+    )
+  ), 
+
+  # Output another weights table with flags.
   tar_target(
     p4_weights_flagged_write,
-    {
-      file_out <- "4_qc/out/weights_flagged.csv"
-      write_csv(p4_weights_flagged, file_out)
-      file_out
-    },
+    write_csv_targets(p4_weights_flagged, "4_qc/out/weights_flagged.csv"),
     format = "file"
   )
 )

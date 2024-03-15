@@ -1,73 +1,80 @@
-# ==============================================================================
-# installations
-# ==============================================================================
-# install.packages("targets")
-# remotes::install_github("doi-usgs/ncdfgeom)
-# remotes::install_github("doi-usgs/nhdplusTools) 
+# This code uses a pipelining package called targets. We assume you have some
+# basic familiarity with it and proficiency in R. If you need help contact
+# Ellie White (ewhite@usgs.gov)
 
-## if there are problems with the functions in nhdplusTools try running this 
-## it clears and re-downloads the metadata index of all the characteristics
+
+# ==============================================================================
+# Installations
+# ==============================================================================
+# You can install these packages by copy-pasting the code here in the R console. 
+# Make sure the code in this section stays commented out. 
+# When you are done installing packages you will simply run tar_make() in the 
+# R console. 
+
+# install.packages("targets")
+
+# As of 03/14/2024, you must install the developer version on ncdfgeom. The CRAN
+# version does not include the required normalize argument in one of its 
+# functions. 
+# remotes::install_github("doi-usgs/ncdfgeom")
+
+# install.packages("doi-usgs/nhdplusTools") 
+
+# If there are problems with the functions in nhdplusTools try running this. It
+# clears and re-downloads the metadata index of all the characteristics.
 # nhdplusTools::get_characteristics_metadata(cache = FALSE)
 
 
-## authenticate ScienceBase if needed
+# Authenticate ScienceBase if needed for your datasets. The ones in our template
+# won't need it.
+# remotes::install_github("doi-usgs/sbtools)
 # initialize_sciencebase_session(username = "blah@usgs.gov") 
 
 
-## container considerations
-## to run the pipeline from within the container, we need to set the nhdplusTools data dir so we can retrieve characteristics metadata
-# nhdplusTools::nhdplusTools_data_dir("1_fetch/out")
-
-
-
 # ==============================================================================
-# main target script for calling all subsequent targets
+# Main target script for calling all subsequent targets
 # ==============================================================================
 library(targets)
 library(tarchetypes)
 
-# target options
+# Target options
 tar_option_set(
   packages = c(
     # phase 1_fetch
     "tidyverse", "nhdplusTools", "sf", "sbtools", "aws.s3", 
     
     # phase 2_process, "areal" is a dependency that needs to be downloaded 
-    "ncdfgeom", "mapdata", "maps", "data.table", "stringr",
+    "ncdfgeom", "mapdata", "maps", "data.table", "stringr", "assertthat", "cli", 
     
     # phase 3_visualize
-    "ggmap", "cowplot", "scico", "viridis"
+    "ggmap", "scico", "viridis"
     
     # phase 4_qc
     ), 
   format = "rds"
 )
 
-# suppress package warnings
-options(tidyverse.quiet = TRUE)
-options(dplyr.summarise.inform = FALSE)
+# Suppress package warnings
+options(tidyverse.quiet = TRUE, dplyr.summarise.inform = FALSE)
 
 source('1_fetch_targets.R')
 source('2_process_targets.R')
 source('3_visualize_targets.R')
 source('4_qc_targets.R')
 
-# # partial list of targets: use this if all you want is the data
+# Partial list of targets
+# Use this if all you want is the data. You can either pick this *or* the list 
+# below.
 # list(p1_targets_list, p2_targets_list)
 
-# complete list of targets: use this if you also want some plots (could take a long time to build)
+# Complete list of targets
+# Use this if you also want some plots. This could take a long time to build.
 list(p1_targets_list, p2_targets_list, p3_targets_list, p4_targets_list)
 
 
 # ==============================================================================
-# helper functions
+# Helper functions
 # ==============================================================================
-## you can put these in the console after the pipeline is built 
-# print(tar_meta(fields="seconds"), n = 50)
+# You can put these in the console after the pipeline is built to profile 
 # print(tar_meta(fields="seconds") |> arrange(-seconds), n = 100)
-
 # tar_visnetwork()
-
-
-
-

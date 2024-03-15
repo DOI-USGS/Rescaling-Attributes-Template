@@ -3,27 +3,39 @@
 
 <img src="figures/doc_motivation.jpg" width="400" alt="Map of a HUC12 catchment where the outlet is the Delaware River Basin above Ranconcas Creek. The smaller NHDPlus catchments are nestled within the catchment except for one small catchment that crosses the HUC12 boundary at the outlet. There are two prominent labels: (1) `We have data here`, which points to the smaller NHDPlus catchments, and (2) `We want data here`, which points to the HUC12 boundary. The map also depicts rivers/streams and uses the World Topo Map as a base map.">
 
-In WMA, our models and projects work with their own special geospatial boundaries. So, often, we find ourselves wanting to use the data processed to a certain polygon but we need that data tied to our polygons. The hard way of doing that is to recreate the initial study, and use our polygons to aggregate data. But an easier way, to get a close estimate of the values we need, is to find the amount of overlap between the two polygons, and rescale those attributes with a simple weighted mean.​
+This repo contains a template {targets} pipeline for rescaling attributes to your intended spatial polygons. 
 
-For example, the PUMP project needs NHDPlus data to be at NHGF catchments, RIMBE needs NHDPlus data to be at HUC 12s, the national IWAAs team needs wateruse data processed to an older version of the WBD to be at a newer version...​
+## Motivation 
+In WMA, our models and projects work with their own special geospatial boundaries. Often, we find ourselves wanting to use the data processed to a certain polygon, but first, we need that data tied to our polygons. The hard way of doing that is to recreate the initial study, and use our polygons to aggregate data. But an easier way, to get a close estimate of the values we need, is to find the amount of overlap between the two polygons, and rescale those attributes with a simple weighted mean or other aggregation methods that make sense for the data in question.​
 
-Realizing that this is a problem that will keep coming up, we have decided to make a template pipeline that can take in any source and/or target polygon. This repo contains a template {targets} pipeline for rescaling attributes to your intended spatial polygons. 
+This kind of rescaling has happened a few times that I have tried to document them in the table below: 
+| Project      | Source Attributes     | Source Polygons | Target Polygons                | Repo Link | Data Release |
+| :----------- | :-------------------- | :-------------- | :----------------------------- | :-------- | :----------- |
+| HyTest       | NHM-PRMS              |                 |                                |           |              |
+| Natl. IWAAs  | Water Use             | WBD ??? HUC12s  | WBD 10-2020 HUC 12 (mainstems) | ?         |              |
+| PUMP         | Geospatial Attributes | NHDPlus V2.1    | NHGF V1.1                      |           |              |
+| NHGF         | Geospatial Attributes | NHDPlus V2.1    | WBD 10-2020 HUC 12 (mainstems) |           |              |
+| RIMBE-WM     | Geospatial Attributes | NHDPlus V2.1    | WBD 10-2020 HUC 12 (mainstems) |           |              |
+| RIMBE-SED    | SEDAC                 | County          | WBD 10-2020 HUC 12 (mainstems) |           |              |
+
+Realizing that this is a problem that will keep coming up, and attempting to reduce duplicated workflows, we have decided to make a template pipeline that can take in any source and/or target polygon. 
 
 ## Process
 The pipeline takes in a set of variables of interest (a subset of the "CAT_[attribute]" in `nhdplusTools::get_characteristics_metadata()`). As of Feb. 2024, the pipeline has only been stress-tested with ~1,254 variables of interest as opposed to the full 14,139 available in the dataset. 
 
-The area of interest is defined by the input datasets: NHDPlusV2 (CONUS plus crude transboundary catchments) and WBD 10-2020 HUC12 (CONUS). 
+The source and target polygons in the template are the NHDPlusV2 (CONUS plus crude transboundary catchments) and WBD 10-2020 HUC12s (CONUS). The Area of Interest (AOI) is defined as the delaware river basin. We defined this AOI, as opposed to using the national polygons, so as to reduce the computational burden. But the same logic can be applied to national analysis. 
 
 In phase 2, weights are built using `ncdfgeom::calculate_area_intersection_weights()`. The attributes are pulled with `nhdplusTools::get_catchment_characteristics()` and rescaled with basic dplyr functions such as `mutate()`, `group_by()`, and `summarize()`. The formula's below show what we are doing in the process phase. 
 
 ![](figures/formulas_gdptools.png)
 
-Phase 3 contains some density plots and maps built for a one variable to ensure the pipeline is running as intended. And Phase 4 contains one map emphasizing areas where the weights should add to one, but do not. Caution should be taken in these areas. 
+Phase 3 contains a density plots and choropleth maps built for a one variable of interest to ensure the pipeline is running as intended. Phase 4 contains one map emphasizing areas where the weights should add to one. Caution should be taken in areas where they do not. In addition, we output a flagged version of the weights table where target polygons are flagged if their weights did not add to one. 
 
 ![](figures/doc_process.png)
 
-## Outputs
 
+## Outputs
+The pipeline produces two main outputs: a weights table and a rescaled attributes table both in `.csv` format under `2_process/out/`.
 **Attributes**
 
 ![](figures/doc_outputs_att.png)
@@ -32,10 +44,15 @@ Phase 3 contains some density plots and maps built for a one variable to ensure 
 
 ![](figures/doc_outputs_weights.png)
 
+## How to run the pipeline 
+As of 03/14/2024, you must install the developer version on ncdfgeom. You can do that by running `remotes::install_github("doi-usgs/ncdfgeom")
+` in the console. In the [current version](https://cran.r-project.org/web/packages/ncdfgeom/ncdfgeom.pdf) on CRAN (v 1.1.6) calculate_area_intersection_weights() does not include the required normalize argument, but the [development version](https://doi-usgs.github.io/ncdfgeom/reference/calculate_area_intersection_weights.html) (v 1.2.0) does.
+
 ## Profiling
 The most expensive target to build is intersecting the source polygons with the area of interest taking ~6 min. 
 
 ![](figures/tar_meta.PNG)
+
 
 ## SessionInfo()
 ```
@@ -80,24 +97,6 @@ loaded via a namespace (and not attached):
 Pipeline planning happend in [Mural](https://app.mural.co/t/gswocooeto6166/m/gswocooeto6166/1674664777393/0c9d8beacaa9c442e27bc5fe8112f05e6deaa68b?sender=uc2098797df19e98c2b2f4081). 
 ![plan](figures/doc_planning.png)
 
-## Running the Pipeline using Docker
-This pipeline includes a pre-built docker [image](https://code.usgs.gov/wma/wp/national-geospatial-attributes/container_registry). 
-If you have not previously pulled down a docker image hosted on `code.usgs.gov` 
-you will need to set up a GitLab personal access token (PAT) and use it to log in. 
-Guidance for this "once-in-a-while" process is available in the [DSP Manual](https://dsp-manual.wma.chs.usgs.gov/docs/containerization/docker_basics/#authenticating-to-gitlab-container-registries).
-
-After you have access to the image, you can launch an RStudio session in the 
-container using the following commands:
-
-```bash
-cd national-geospatial-attributes
-# set the password to whatever you like below, or remove the entire
-# "-e PASSWORD=foo" section to use an automatically generated one
-docker run --rm -it -e PASSWORD=foo -v "$PWD:/national-geospatial-attributes" -p 8787:8787 code.usgs.gov:5001/wma/wp/national-geospatial-attributes:latest
-```
-Now open up a web browser at [http://localhost:8787](http://localhost:8787), and 
-log in with the username "rstudio" and the password set above (e.g. "foo"). You 
-should be in the directory with the code, and can run `targets::tar_visnetwork()`.
 
 ## Contributing
 We welcome contributions and suggestions from the community. Please consider 
