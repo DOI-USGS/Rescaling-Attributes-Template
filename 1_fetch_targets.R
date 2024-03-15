@@ -105,7 +105,7 @@ p1_targets_list <- list(
     "huc12"
   ), 
   
-  # what is the geometry column called in your spatial dataframes?
+  # What is the geometry column called in your spatial dataframes?
   tar_target(
     p1_source_geom_name, 
     "geom"
