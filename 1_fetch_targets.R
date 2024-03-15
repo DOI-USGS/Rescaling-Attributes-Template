@@ -56,34 +56,21 @@ p1_targets_list <- list(
   # URL: "https://prd-tnm.s3.amazonaws.com/index.html?prefix=StagedProducts/Hydrography/WBD/National/GDB/WBD_National_GDB.zip"
   # download the polygons from the cloud and put them in "1_fetch/out"
   tar_target(
-    p1_target_dl,
-    {
-      ## check if bucket exists
-      # bucket_exists(
-      #   bucket = "s3://prd-tnm",
-      #   region = "us-west-2"
-      # )
-      
-      path <- "1_fetch/out"
-      fileout <- file.path(path, "WBD_National_GDB.zip")
-      
-      save_object(
-        object = "StagedProducts/Hydrography/WBD/National/GDB/WBD_National_GDB.zip", 
-        bucket = "s3://prd-tnm/",
-        region = "us-west-2",
-        file = fileout
-      )
-      unzip(fileout, exdir = path)
-      fileout
-    },
+    p1_target_zip,
+    save_object(
+      object = "StagedProducts/Hydrography/WBD/National/GDB/WBD_National_GDB.zip", 
+      bucket = "s3://prd-tnm/",
+      region = "us-west-2",
+      file = "1_fetch/out/WBD_National_GDB.zip"
+    ),
     format = "file"
   ),
-  
+
   # read in the polygons
   # use sf::st_layers(p1_target_dl) in the console to find the layers
   tar_target(
     p1_target, 
-    sf::read_sf(p1_target_dl, layer = "WBDHU12")
+    sf::read_sf(p1_target_zip, layer = "WBDHU12")
   ),
   
   # (3) Basin of interest: if you don't want to do national analysis, bring in your area of interest
