@@ -44,7 +44,7 @@ tar_option_set(
     "tidyverse", "nhdplusTools", "sf", "sbtools", "aws.s3", 
     
     # phase 2_process, "areal" is a dependency that needs to be downloaded 
-    "ncdfgeom", "mapdata", "maps", "data.table", "stringr",
+    "ncdfgeom", "mapdata", "maps", "data.table", "stringr", "assertthat", "cli", 
     
     # phase 3_visualize
     "ggmap", "scico", "viridis"

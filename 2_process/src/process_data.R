@@ -127,3 +127,38 @@ ensure_no_dup_ids <- function(sf, id_name) {
     return(dedup(sf, id))
   }
 }
+
+#' Add area columns to weights data frame
+#' @param weights data frame; must have columns: w, `source_id_name`, and `target_id_name`
+#' @param source_areas data.frame; must have columns: source_id and `source_id_name`
+#' @param target_areas data.frame; must have columns: source_id and `target_id_name`
+#' @param source_id_name chr; name of source id column
+#' @param target_id_name chr; name of target id column
+#'
+#' @return data frame that joins `weights`, `areas_source`, and `areas_target`
+#' 
+add_area_to_w_mtrx <- function(weights, source_areas, target_areas, 
+                               source_id_name, target_id_name) {
+  # Ensure necessary column names are present.
+  assertthat::assert_that(
+    assertthat::has_name(weights, c("w", source_id_name, target_id_name))
+  )
+  assertthat::assert_that(assertthat::has_name(source_areas, c("source_id")))
+  assertthat::assert_that(
+    assertthat::has_name(target_areas, c("target_id", "target_areasqkm"))
+  )
+  
+  weights |> 
+    dplyr::left_join(source_areas, by = join_by(!!source_id_name == source_id)) |>
+    dplyr::left_join(target_areas, by = join_by(!!target_id_name == target_id)) |>
+    dplyr::mutate(intersection_areasqkm = target_areasqkm * w)
+}
+
+#' Write csv tables and return the path 
+#' @param data table you want to write out 
+#' @param path full path including extension
+#' 
+write_csv_targets <- function(data, path, ...) {
+  write_csv(data, path)
+  return(path)
+}

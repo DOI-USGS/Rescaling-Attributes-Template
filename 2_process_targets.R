@@ -89,7 +89,7 @@ p2_targets_list <- list(
   # Write it out for convenience, but, we won't be needing this target anymore.
   tar_target(
     p2_weights_write,
-    write_csv(p2_weights, "2_process/out/source_target_weights.csv"),
+    write_csv_targets(p2_weights, "2_process/out/source_target_weights.csv"),
     format = "file"
   ),
 
@@ -98,7 +98,7 @@ p2_targets_list <- list(
   # ============================================================================
   # Calculate source areas
   tar_target(
-    p2_areas_x,
+    p2_source_areas,
     tibble(
       source_id = p2_source[[p1_source_id_name]],
       source_areasqkm = as.numeric(
@@ -109,7 +109,7 @@ p2_targets_list <- list(
 
   # Calculate target areas
   tar_target(
-    p2_areas_y,
+    p2_target_areas,
     tibble(
       target_id = p2_target[[p1_target_id_name]],
       target_areasqkm = as.numeric(
@@ -123,8 +123,8 @@ p2_targets_list <- list(
     p2_weights_plus,
     add_area_to_w_mtrx(
       weights = p2_weights,
-      areas_x = p2_areas_x,
-      areas_y = p2_areas_y,
+      source_areas = p2_source_areas,
+      target_areas = p2_target_areas,
       source_id_name = p1_source_id_name,
       target_id_name = p1_target_id_name
     )
@@ -218,7 +218,7 @@ p2_targets_list <- list(
   # Write out the rescaled values.
   tar_target(
     p2_rescaled_write,
-    write_csv(p2_rescaled_wide, "2_process/out/rescaled_attributes.csv"),
+    write_csv_targets(p2_rescaled_wide, "2_process/out/rescaled_attributes.csv"),
     format = "file"
   ),
   # ============================================================================

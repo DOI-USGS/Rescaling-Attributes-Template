@@ -108,7 +108,7 @@ p4_targets_list <- list(
   # Output another weights table with flags.
   tar_target(
     p4_weights_flagged_write,
-    write_csv(p4_weights_flagged, "4_qc/out/weights_flagged.csv"),
+    write_csv_targets(p4_weights_flagged, "4_qc/out/weights_flagged.csv"),
     format = "file"
   )
 )
