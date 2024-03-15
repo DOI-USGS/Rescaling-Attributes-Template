@@ -94,7 +94,7 @@ p1_targets_list <- list(
   # ============================================================================
   # what are your columns called?
   # ============================================================================
-  # what is the unique id for each source and target geometry?
+  # What is the unique id for each source and target geometry?
   tar_target(
     p1_source_id_name, 
     "featureid"
