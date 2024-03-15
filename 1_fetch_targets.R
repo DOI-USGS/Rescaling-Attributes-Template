@@ -48,7 +48,7 @@ p1_targets_list <- list(
   
   tar_target(
     p1_source, 
-    sf::read_sf(p1_source_dl)
+    sf::read_sf(p1_source_gpkg)
   ), 
   
   # (2) target polygons: define the polygons you want attributes processed to
