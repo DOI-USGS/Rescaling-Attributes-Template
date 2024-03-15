@@ -51,7 +51,8 @@ source('2_process_targets.R')
 source('3_visualize_targets.R')
 source('4_qc_targets.R')
 
-# # partial list of targets: use this if all you want is the data. You can either pick this *or* the list below. 
+# Partial list of targets: use this if all you want is the data. You can either
+# pick this *or* the list below.
 # list(p1_targets_list, p2_targets_list)
 
 # # complete list of targets: use this if you also want some plots. This could take a long time to build.
