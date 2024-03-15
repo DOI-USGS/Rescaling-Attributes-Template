@@ -39,8 +39,9 @@ p2_targets_list <- list(
     sf::st_intersection(p2_target_transformed, p2_aoi_transformed)
   ),
   
-  # clean geometry types
-  # sometimes, the WBD has geometries that are not polygons or multipolygons. This pipeline will not know what to do with those
+  # Clean geometry types
+  # Sometimes, the WBD has geometries that are not polygons or multipolygons.
+  # This pipeline will not know what to do with those.
   tar_target(
     p2_target_cleaned, 
     clean_geometry_type(p2_target_intersected)
