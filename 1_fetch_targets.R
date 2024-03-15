@@ -37,7 +37,7 @@ p1_targets_list <- list(
   # in this example, we have data at NHDPlusV2 catchments 
   # download the polygons and put them in "1_fetch/out"
   tar_target(
-    p1_source_dl, 
+    p1_source_gpkg, 
     sbtools::item_file_download(
       "61295190d34e40dd9c06bcd7", 
       names = "reference_catchments.gpkg",
