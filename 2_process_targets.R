@@ -25,8 +25,7 @@ p2_targets_list <- list(
   
   tar_target(
     p2_aoi_transformed, 
-    p1_aoi |>
-      sf::st_transform(p2_proj) 
+    sf::st_transform(p1_aoi, p2_proj) 
   ), 
   
   # subset to AOI
