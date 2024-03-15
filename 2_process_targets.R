@@ -21,8 +21,7 @@ p2_targets_list <- list(
   
   tar_target(
     p2_target_transformed, 
-    p1_target |>
-      sf::st_transform(p2_proj)
+    sf::st_transform(p1_target, p2_proj) 
   ),
   
   tar_target(
