@@ -6,8 +6,8 @@
 # Installations
 # ==============================================================================
 # install.packages("targets")
-# remotes::install_github("doi-usgs/ncdfgeom)
-# remotes::install_github("doi-usgs/nhdplusTools) 
+# remotes::install_github("doi-usgs/ncdfgeom")
+# remotes::install_github("doi-usgs/nhdplusTools") 
 
 # If there are problems with the functions in nhdplusTools try running this. It
 # clears and re-downloads the metadata index of all the characteristics.
