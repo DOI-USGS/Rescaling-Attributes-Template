@@ -33,7 +33,8 @@ p3_targets_list <- list(
       geom_and_att = p3_source,
       att = p3_attribute_to_plot,
       file_out_path = "3_visualize/out/p3_source_attribute.png"
-    )
+    ),
+    format = "file"
   ), 
 
   # (2) plot one target attribute
