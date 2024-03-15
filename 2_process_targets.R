@@ -136,15 +136,17 @@ p2_targets_list <- list(
   # ============================================================================
   # read in your attributes table
   # you want your dataframe to look like this (column order does not matter):
-  #       | p1_source_var_name | p1_source_id_name | p1_source_value_name | others ...     |
-  #       |        .           |          .        |            .         |         .      |
-  #       |        .           |          .        |            .         |         .      |
-  #       |        .           |          .        |            .         |         .      |
+  # | p1_source_var_name | p1_source_id_name | p1_source_value_name | others ...     |
+  # |        .           |          .        |            .         |         .      |
+  # |        .           |          .        |            .         |         .      |
+  # |        .           |          .        |            .         |         .      |
   #
-  # e.g., | characteristic_id  | feature_id        | characteristic_value | percent_nodata |
-  #       |        .           |          .        |            .         |         .      |
+  # For example:
+  # | characteristic_id  | feature_id        | characteristic_value | percent_nodata |
+  # |        .           |          .        |            .         |         .      |
   
-  # in this example, we will pull attributes for NHDPlusV2 catchments using some handy functions and reformat it
+  # In this example, we will pull attributes for NHDPlusV2 catchments using some
+  # handy functions and reformat it
   tar_target(
     p2_att_raw,
     nhdplusTools::get_catchment_characteristics(
