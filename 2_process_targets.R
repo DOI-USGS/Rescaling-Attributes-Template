@@ -227,7 +227,8 @@ p2_targets_list <- list(
   ),
   # ============================================================================
   
-  # targets search path; these are the libraries targets loads in and the order in which R searches to find functions 
+  # targets search path; these are the libraries targets loads in and the order
+  # in which R searches to find functions
   tar_target(
     p2_search, 
     search()
