@@ -44,9 +44,9 @@ The pipeline produces two main outputs: a weights table and a rescaled attribute
 
 ![](figures/doc_outputs_weights.png)
 
-## How to run the pipeline 
-As of 03/14/2024, you must install the developer version on ncdfgeom. You can do that by running `remotes::install_github("doi-usgs/ncdfgeom")
-` in the console. In the [current version](https://cran.r-project.org/web/packages/ncdfgeom/ncdfgeom.pdf) on CRAN (v 1.1.6) calculate_area_intersection_weights() does not include the required normalize argument, but the [development version](https://doi-usgs.github.io/ncdfgeom/reference/calculate_area_intersection_weights.html) (v 1.2.0) does.
+## How to run the pipeline
+#### Package management with [renv](https://rstudio.github.io/renv)
+This project uses [renv](https://rstudio.github.io/renv) to manage packages used by the pipeline. Renv works behind the scenes to ensure that the same package versions used by pipeline are used across contributors. When opening the project, renv should, behind the scenes, initiate itself and prompt the user for any additional actions needed. If this is the first time using renv, it may take a little while as specific package versions are downloaded and installed. See [Collaboration in renv](https://rstudio.github.io/renv/articles/renv.html#collaboration) for more information.
 
 ## Profiling
 The most expensive target to build is intersecting the source polygons with the area of interest taking ~6 min. 
@@ -107,8 +107,3 @@ and [submit a merge request](https://docs.gitlab.com/ee/user/project/merge_reque
 
 Go here for details on adhering by 
 the [USGS Code of Scientific Conduct](https://www.usgs.gov/office-of-science-quality-and-integrity/fundamental-science-practices).
-
-
-
-
-
