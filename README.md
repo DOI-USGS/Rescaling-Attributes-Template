@@ -46,7 +46,7 @@ The pipeline produces two main outputs: a weights table and a rescaled attribute
 
 ## How to run the pipeline
 #### Package management with [renv](https://rstudio.github.io/renv)
-This project uses [renv](https://rstudio.github.io/renv) to manage packages used by the pipeline. Renv works behind the scenes to ensure that the same package versions used by pipeline are used across contributors. When opening the project, renv should, behind the scenes, initiate itself and prompt the user for any additional actions needed. If this is the first time using renv, it may take a little while as specific package versions are downloaded and installed. See [Collaboration in renv](https://rstudio.github.io/renv/articles/renv.html#collaboration) for more information.
+This project uses [renv](https://rstudio.github.io/renv) to manage packages used by the pipeline. Renv works behind the scenes to ensure that the same package versions used by pipeline are used across contributors. It installs specific versions of packages to a `renv/` folder within the project directory that it loads when `library()` is invoked, even if the packages are installed elsewhere (e.g., in the `.libPaths()` path). When opening the project, renv should, behind the scenes, initiate itself and prompt the user for any additional actions needed. If this is the first time using renv, it may take a little while as specific package versions are downloaded and installed. See [Collaboration in renv](https://rstudio.github.io/renv/articles/renv.html#collaboration) for more information.
 
 ## Profiling
 The most expensive target to build is intersecting the source polygons with the area of interest taking ~6 min. 

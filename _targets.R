@@ -37,6 +37,11 @@
 library(targets)
 library(tarchetypes)
 
+# Ensure packages are synched with renv lockfile
+if(!renv::status()$synchronized){
+  renv::restore(rebuild = FALSE, clean = TRUE, prompt = FALSE)
+}
+
 # Target options
 tar_option_set(
   packages = c(
