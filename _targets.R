@@ -1,8 +1,3 @@
-# This code uses a pipelining package called targets. We assume you have some
-# basic familiarity with it and proficiency in R. If you need help contact
-# Ellie White (ewhite@usgs.gov)
-
-
 # ==============================================================================
 # Installations
 # ==============================================================================

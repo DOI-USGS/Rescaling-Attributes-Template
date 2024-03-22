@@ -45,8 +45,19 @@ The pipeline produces two main outputs: a weights table and a rescaled attribute
 ![](figures/doc_outputs_weights.png)
 
 ## How to run the pipeline
-#### Package management with [renv](https://rstudio.github.io/renv)
+### Package management with [renv](https://rstudio.github.io/renv)
 This project uses [renv](https://rstudio.github.io/renv) to manage packages used by the pipeline. Renv works behind the scenes to ensure that the same package versions used by pipeline are used across contributors. It installs specific versions of packages to a `renv/` folder within the project directory that it loads when `library()` is invoked, even if the packages are installed elsewhere (e.g., in the `.libPaths()` path). When opening the project, renv should, behind the scenes, initiate itself and prompt the user for any additional actions needed. If this is the first time using renv, it may take a little while as specific package versions are downloaded and installed. See [Collaboration in renv](https://rstudio.github.io/renv/articles/renv.html#collaboration) for more information.
+
+### Run the pipeline
+This project also uses [targets](https://books.ropensci.org/targets/) to run the pipeline. We assume you have some basic familiarity with it and proficiency in R. If you need help setting up or working through errors, please, contact Ellie White (ewhite@usgs.gov). Follow these steps to run the pipeline with the example data, which the pipeline will fetch for you, and the example attributes, which it will pull from the `nhdplusTools` package: 
+
+1) Open the `rescaling-attributes-template.Rproj` file in rstudio.
+2) Open the `_targets.R` file. 
+3) Load in the targets library in the console with: `library(targets)`.
+4) Run `tar_make()` in the console. 
+5) If you see "End Pipeline [x minutes]" in the console, you have ran the pipeline successfully. Go to `2_process/out` to retrieve the results. 
+6) Now, you can modify the pipeline's `1_fetch_targets.R` substituting with your data and run `tar_make()` again. 
+
 
 ## Profiling
 The most expensive target to build is intersecting the source polygons with the area of interest taking ~6 min. 
