@@ -1,8 +1,3 @@
-# This code uses a pipelining package called targets. We assume you have some
-# basic familiarity with it and proficiency in R. If you need help contact
-# Ellie White (ewhite@usgs.gov)
-
-
 # ==============================================================================
 # Installations
 # ==============================================================================
@@ -36,6 +31,11 @@
 # ==============================================================================
 library(targets)
 library(tarchetypes)
+
+# Ensure packages are synched with renv lockfile
+if(!renv::status()$synchronized){
+  renv::restore(rebuild = FALSE, clean = TRUE, prompt = FALSE)
+}
 
 # Target options
 tar_option_set(
