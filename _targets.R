@@ -41,7 +41,7 @@ if(!renv::status()$synchronized){
 tar_option_set(
   packages = c(
     # phase 1_fetch
-    "tidyverse", "nhdplusTools", "sf", "sbtools", "aws.s3", 
+    "tidyverse", "nhdplusTools", "sf", "sbtools", "curl", 
     
     # phase 2_process, "areal" is a dependency that needs to be downloaded 
     "ncdfgeom", "mapdata", "maps", "data.table", "stringr", "assertthat", "cli", 
