@@ -62,12 +62,10 @@ p1_targets_list <- list(
   # Download the polygons from the cloud and put them in "1_fetch/out".
   tar_target(
     p1_target_zip,
-    save_object(
-      object = "StagedProducts/Hydrography/WBD/National/GDB/WBD_National_GDB.zip", 
-      bucket = "s3://prd-tnm/",
-      region = "us-west-2",
-      file = "1_fetch/out/WBD_National_GDB.zip"
-    ),
+    curl::multi_download(
+      urls = "https://prd-tnm.s3.amazonaws.com/StagedProducts/Hydrography/WBD/National/GDB/WBD_National_GDB.zip",
+      destfiles = "1_fetch/out/WBD_National_GDB.zip"
+    )$destfile, # This indexing ensures the output path is returned to be compatible with `format = "file`
     format = "file"
   ),
 
