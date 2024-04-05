@@ -9,23 +9,23 @@ This repo contains a template {targets} pipeline for rescaling attributes to you
 In WMA, our models and projects work with their own special geospatial boundaries. Often, we find ourselves wanting to use the data processed to a certain polygon, but first, we need that data tied to our polygons. The hard way of doing that is to recreate the initial study, and use our polygons to aggregate data. But an easier way, to get a close estimate of the values we need, is to find the amount of overlap between the two polygons, and rescale those attributes with a simple weighted mean or other aggregation methods that make sense for the data in question.​
 
 This kind of rescaling has happened a few times that I have tried to document them in the table below: 
-| Project      | Source Attributes     | Source Polygons | Target Polygons                | Repo Link | Data Release |
-| :----------- | :-------------------- | :-------------- | :----------------------------- | :-------- | :----------- |
-| HyTest       | NHM-PRMS              |                 |                                |           |              |
-| Natl. IWAAs  | Water Use             | WBD ??? HUC12s  | WBD 10-2020 HUC 12 (mainstems) | ?         |              |
-| PUMP         | Geospatial Attributes | NHDPlus V2.1    | NHGF V1.1                      |           |              |
-| NHGF         | Geospatial Attributes | NHDPlus V2.1    | WBD 10-2020 HUC 12 (mainstems) |           |              |
-| RIMBE-WM     | Geospatial Attributes | NHDPlus V2.1    | WBD 10-2020 HUC 12 (mainstems) |           |              |
-| RIMBE-SED    | SEDAC                 | County          | WBD 10-2020 HUC 12 (mainstems) |           |              |
+| Project      | Source Attributes     | Source Polygons | Target Polygons                | Contact              | Data Release |
+| :----------- | :-------------------- | :-------------- | :----------------------------- | :------------------- | :----------- |
+| HyTest       | NHM-PRMS              | NHGF V1.0-1.2   | WBD 10-2020 HUC 12 (mainstems) | Sydney Fox           | ?            |
+| Natl. IWAAs  | Water Use             | WBD ??? HUC12s  | WBD 10-2020 HUC 12 (mainstems) | Anthony Martinez     | In Progress  |
+| PUMP         | Geospatial Attributes | NHDPlus V2.1    | NHGF V1.1                      | Lauren Koenig-Snyder | In Progress  |
+| NHGF         | Geospatial Attributes | NHDPlus V2.1    | WBD 10-2020 HUC 12 (mainstems) | Ellie White          | In Progress  |
+| RIMBE-WM     | Geospatial Attributes | NHDPlus V2.1    | WBD 10-2020 HUC 12 (mainstems) | Ellie White          | In Progress  |
+| RIMBE-SED    | SEDAC                 | County          | WBD 10-2020 HUC 12 (mainstems) | Ellie White          | In Progress  |
 
-Realizing that this is a problem that will keep coming up, and attempting to reduce duplicated workflows, we have decided to make a template pipeline that can take in any source and/or target polygon. 
+Realizing this is a perpetual problem, and attempting to reduce duplicated workflows, we have made a template pipeline that can take in any source and/or target polygon. 
 
 ## Process
 The pipeline takes in a set of variables of interest (a subset of the "CAT_[attribute]" in `nhdplusTools::get_characteristics_metadata()`). As of Feb. 2024, the pipeline has only been stress-tested with ~1,254 variables of interest as opposed to the full 14,139 available in the dataset. 
 
 The source and target polygons in the template are the NHDPlusV2 (CONUS plus crude transboundary catchments) and WBD 10-2020 HUC12s (CONUS). The Area of Interest (AOI) is defined as the delaware river basin. We defined this AOI, as opposed to using the national polygons, so as to reduce the computational burden. But the same logic can be applied to national analysis. 
 
-In phase 2, weights are built using `ncdfgeom::calculate_area_intersection_weights()`. The attributes are pulled with `nhdplusTools::get_catchment_characteristics()` and rescaled with basic dplyr functions such as `mutate()`, `group_by()`, and `summarize()`. The formula's below show what we are doing in the process phase. 
+In phase 2, weights are built using `ncdfgeom::calculate_area_intersection_weights()`. The attributes are pulled with `nhdplusTools::get_catchment_characteristics()` and rescaled with basic dplyr functions such as `mutate()`, `group_by()`, and `summarize()`. The formulas below show what we are doing in the process phase. 
 
 ![](figures/formulas_gdptools.png)
 
@@ -33,9 +33,9 @@ Phase 3 contains a density plots and choropleth maps built for a one variable of
 
 ![](figures/doc_process.png)
 
-
 ## Outputs
 The pipeline produces two main outputs: a weights table and a rescaled attributes table both in `.csv` format under `2_process/out/`.
+
 **Attributes**
 
 ![](figures/doc_outputs_att.png)
@@ -46,10 +46,9 @@ The pipeline produces two main outputs: a weights table and a rescaled attribute
 
 ## How to run the pipeline
 ### Package management with [renv](https://rstudio.github.io/renv)
-This project uses [renv](https://rstudio.github.io/renv) to manage packages used by the pipeline. Renv works behind the scenes to ensure that the same package versions used by pipeline are used across contributors. It installs specific versions of packages to a `renv/` folder within the project directory that it loads when `library()` is invoked, even if the packages are installed elsewhere (e.g., in the `.libPaths()` path). When opening the project, renv should, behind the scenes, initiate itself and prompt the user for any additional actions needed. If this is the first time using renv, it may take a little while as specific package versions are downloaded and installed. See [Collaboration in renv](https://rstudio.github.io/renv/articles/renv.html#collaboration) for more information.
+This project uses [renv](https://rstudio.github.io/renv) to manage packages used by the pipeline. Renv works behind the scenes to ensure that the same package versions used by the pipeline are used across contributors. It installs specific versions of packages to a `renv/` folder within the project directory that it loads when `library()` is invoked, even if the packages are installed elsewhere (e.g., in the `.libPaths()` path). When opening the project, renv should, behind the scenes, initiate itself and prompt the user for any additional actions needed. If this is the first time using renv on the project, it may take R a little while to set up as specific package versions are downloaded and installed. See [Collaboration in renv](https://rstudio.github.io/renv/articles/renv.html#collaboration) for more information.
 
 If this is your first time using renv, install it from CRAN. Then try loading the targets library. If you get an error message saying "there is no package called ‘targets’", run `renv::install("targets")` and follow the prompts. You may need to do the same thing for `tarchetypes`. Now, you are ready to run `tar_make()`. This will install a lot of packages and may take a while.   
-
 
 ### Run the pipeline
 This project uses [targets](https://books.ropensci.org/targets/) to run the pipeline. We assume you have some basic familiarity with it and proficiency in R. If you need help setting up or working through errors, please, contact Ellie White (ewhite@usgs.gov). Follow these steps to run the pipeline with the example data, which the pipeline will fetch for you, and the example attributes, which it will pull from the `nhdplusTools` package: 
@@ -59,14 +58,12 @@ This project uses [targets](https://books.ropensci.org/targets/) to run the pipe
 3) Load in the targets library in the console with: `library(targets)`.
 4) Run `tar_make()` in the console. 
 5) If you see "End Pipeline [x minutes]" in the console, you have ran the pipeline successfully. Go to `2_process/out` to retrieve the results. 
-6) Now, you can modify the pipeline's `1_fetch_targets.R` substituting with your data and run `tar_make()` again. Because we are usinng renv, you will need to install additional packages you need with `renv::install()` and update the renv lockfile (similar to an environment.yaml in Python) with `renv::snapshot()`.
-
+6) Now, you can modify the pipeline's fetch targets in `1_fetch_targets.R` by substituting the targets with your data and run `tar_make()` again. Because we are usinng renv, you will need to install additional packages you need with `renv::install()` and update the renv lockfile (similar to an environment.yaml in Python) with `renv::snapshot()`.
 
 ## Profiling
 The most expensive target to build is intersecting the source polygons with the area of interest taking ~6 min. 
 
 ![](figures/tar_meta.PNG)
-
 
 ## SessionInfo()
 ```
@@ -110,7 +107,6 @@ loaded via a namespace (and not attached):
 ## Planning 
 Pipeline planning happend in [Mural](https://app.mural.co/t/gswocooeto6166/m/gswocooeto6166/1674664777393/0c9d8beacaa9c442e27bc5fe8112f05e6deaa68b?sender=uc2098797df19e98c2b2f4081). 
 ![plan](figures/doc_planning.png)
-
 
 ## Contributing
 We welcome contributions and suggestions from the community. Please consider 
