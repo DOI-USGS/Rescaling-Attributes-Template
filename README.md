@@ -1,5 +1,5 @@
 ![USGS](USGS_ID_black.png)
-# National Geospatial Attributes
+# Rescaling Attributes (Template Pipeline)
 
 <img src="figures/doc_motivation.jpg" width="400" alt="Map of a HUC12 catchment where the outlet is the Delaware River Basin above Ranconcas Creek. The smaller NHDPlus catchments are nestled within the catchment except for one small catchment that crosses the HUC12 boundary at the outlet. There are two prominent labels: (1) `We have data here`, which points to the smaller NHDPlus catchments, and (2) `We want data here`, which points to the HUC12 boundary. The map also depicts rivers/streams and uses the World Topo Map as a base map.">
 

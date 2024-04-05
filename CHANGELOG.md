@@ -25,23 +25,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 > starting here, all releases are listed, with respective changes listed by category
 
-## [0.1.0] - 2021-04-15
+## [0.1.0] - 2024-04-15
 
 ### Added
 
-- items added 
+- first version of the rescaling attributes template pipeline
+- renv for package management
 
 ### Changed
 
-- items changed
+- none
 
 ### Fixed
 
-- items fixed
+- none
 
 ### Deprecated
 
-- items deprecated
+- none
 
 
 
