@@ -58,14 +58,19 @@ This project uses [targets](https://books.ropensci.org/targets/) to run the pipe
 3) Load in the targets library in the console with: `library(targets)`.
 4) Run `tar_make()` in the console. 
 5) If you see "End Pipeline [x minutes]" in the console, you have ran the pipeline successfully. Go to `2_process/out` to retrieve the results. 
-6) Now, you can modify the pipeline's fetch targets in `1_fetch_targets.R` by substituting the targets with your data and run `tar_make()` again. Because we are usinng renv, you will need to install additional packages you need with `renv::install()` and update the renv lockfile (similar to an environment.yaml in Python) with `renv::snapshot()`.
+
+### Your specific use case
+Now, you can modify the pipeline's fetch targets in `1_fetch_targets.R` by substituting the targets with your source, target, area of interest geometry, and attribute data and run `tar_make()` again. Because we are usinng renv, you will need to install additional packages you need with `renv::install()` and update the renv lockfile (similar to an environment.yaml in Python) with `renv::snapshot()`. If you want to modify the pipeline for national analysis (instead of a regional area of interest), you will need to simply substitute `p2_source_intersected` and `p2_target_intersected` with `p2_source` and `p2_target` respectively. 
 
 ## Profiling
 The most expensive target to build is intersecting the source polygons with the area of interest taking ~6 min. 
 
 ![](figures/tar_meta.PNG)
 
-## SessionInfo()
+## Built With
+* [R](https://www.r-project.org/about.html)
+
+### SessionInfo()
 ```
 R version 4.3.0 (2023-04-21 ucrt)
 Platform: x86_64-w64-mingw32/x64 (64-bit)
@@ -108,6 +113,15 @@ loaded via a namespace (and not attached):
 Pipeline planning happend in [Mural](https://app.mural.co/t/gswocooeto6166/m/gswocooeto6166/1674664777393/0c9d8beacaa9c442e27bc5fe8112f05e6deaa68b?sender=uc2098797df19e98c2b2f4081). 
 ![plan](figures/doc_planning.png)
 
+## Versioning
+* v0.1.0 initial provisional release
+
+## Authors
+* **[Ellie White](https://www.usgs.gov/staff-profiles/elaheh-white)**  - *Lead Developer* - [USGS Water Mission Area](https://www.usgs.gov/mission-areas/water-resources)
+* **[Lauren Koenig-Snyder](https://www.usgs.gov/staff-profiles/lauren-koenig)** - *Developer* -  [USGS Water Mission Area](https://www.usgs.gov/mission-areas/water-resources)
+
+See also the list of [contributors](https://code.usgs.gov/wma/dsp/pipeline-templates/rescaling-attributes-template/-/network/main) who participated in this project.
+
 ## Contributing
 We welcome contributions and suggestions from the community. Please consider 
 reporting bugs or asking questions on the [issues page](https://code.usgs.gov/wma/wp/national-geospatial-attributes/-/issues). 
@@ -117,3 +131,17 @@ and [submit a merge request](https://docs.gitlab.com/ee/user/project/merge_reque
 
 Go here for details on adhering by 
 the [USGS Code of Scientific Conduct](https://www.usgs.gov/office-of-science-quality-and-integrity/fundamental-science-practices).
+
+## License
+This project is licensed under the Creative Commons CC0 1.0 Universal License - see the [LICENSE.md](LICENSE.md) file for details
+
+## Suggested Citation
+In the spirit of open source, please cite any re-use of the source code stored in this repository. Below is the suggested citation:
+* White, E. & Koenig-Snyder, L. & Blodgett, D. & Wieczorek, M. (2024). Rescaling Attributes Template. https://code.usgs.gov/wma/dsp/pipeline-templates/rescaling-attributes-template. [workflow]
+
+`This repository contains code produced for the Data Assembly function at the United States Geological Survey (USGS). As a work of the United States Government, this product is in the public domain within the United States.`
+
+## Acknowledgments
+* Thanks to David Blodgett for writing/modifying the main intersecting function used.
+* Thanks to Michael Wieczorek for reviwing a major merge request and comparing this method to the one developed in Python. 
+* Thanks to Anthony Martinez for helping with the security and domain review for the release. 
