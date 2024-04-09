@@ -16,9 +16,9 @@
     },
 
     "homepageURL": "https://www.usgs.gov/mission-areas/water-resources/science/data-science-water-resources",
-    "downloadURL": "https://code.usgs.gov/ewhite/rescaling-attributes-template/-/archive/main/rescaling-attributes-template-main.zip",
-    "disclaimerURL": "https://code.usgs.gov/ewhite/rescaling-attributes-template/-/blob/main/DISCLAIMER%20(provisional).md",
-    "repositoryUrl": "https://code.usgs.gov/ewhite/rescaling-attributes-template",
+    "downloadURL": "https://code.usgs.gov/wma/dsp/pipeline-templates/rescaling-attributes-template/-/archive/main/rescaling-attributes-template-main.zip",
+    "disclaimerURL": "https://code.usgs.gov/wma/dsp/pipeline-templates/rescaling-attributes-template/-/blob/main/DISCLAIMER.md",
+    "repositoryUrl": "https://code.usgs.gov/wma/dsp/pipeline-templates/rescaling-attributes-template.git",
     "vcs": "git",
 
     "laborHours": null,
@@ -39,7 +39,7 @@
     },
 
     "date": {
-      "metadataLastUpdated": "2024-04-05"
+      "metadataLastUpdated": "2024-04-09"
     }
   }
 ]
