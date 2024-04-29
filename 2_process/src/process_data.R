@@ -99,7 +99,7 @@ check_no_dup_ids <- function(sf, id_name) {
         "geometries attributes are unreliable because implicit assumptions are",
         "made when aggregating values."
       ),
-      "i" = "You should handle these cases: either deduplicate or make a unique ID.",
+      "i" = "You should handle these cases: either deduplicate or make a unique ID."
     ))
   }
   
@@ -124,7 +124,7 @@ ensure_no_dup_ids <- function(sf, id_name) {
       "!" = "I will deduplicate these for you, but make sure that is what you want!"
     ))
     
-    return(dedup(sf, id))
+    return(dedup(sf, id_name))
   }
 }
 
