@@ -115,6 +115,7 @@ Pipeline planning happend in [Mural](https://app.mural.co/t/gswocooeto6166/m/gsw
 
 ## Versioning
 * v0.1.0 initial provisional release
+* v0.1.1 bug fixes
 
 ## Authors
 * **[Ellie White](https://www.usgs.gov/staff-profiles/elaheh-white)**  - *Lead Developer* - [USGS Water Mission Area](https://www.usgs.gov/mission-areas/water-resources)
